@@ -1,0 +1,22 @@
+package ${package.Repository};
+
+import ${package.Entity}.${entity};
+import ${superRepositoryClassPackage};
+import org.springframework.stereotype.Repository;
+
+/**
+ * <p>
+ * $!{table.comment} Repository 接口
+ * </p>
+ *
+ * @author ${author}
+ * @since ${date}
+ */
+#if(${kotlin})
+interface ${table.repositoryName} : ${superRepositoryClass}<${entity},Integer>
+#else
+@Repository
+public interface ${table.repositoryName} extends ${superRepositoryClass}<${entity},Integer> {
+
+}
+#end

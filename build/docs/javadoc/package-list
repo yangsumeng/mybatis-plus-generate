@@ -1,0 +1,8 @@
+com.baomidou.mybatisplus.generator
+com.baomidou.mybatisplus.generator.config
+com.baomidou.mybatisplus.generator.config.builder
+com.baomidou.mybatisplus.generator.config.converts
+com.baomidou.mybatisplus.generator.config.po
+com.baomidou.mybatisplus.generator.config.querys
+com.baomidou.mybatisplus.generator.config.rules
+com.baomidou.mybatisplus.generator.engine
