@@ -1,24 +1,24 @@
-package ${package.Mapper};
+package ${package.Repository};
 
-import com.baomidou.mybatisplus.mapper.BaseMapper;
 import ${package.Entity}.${entity};
 import org.springframework.stereotype.Repository;
+import ${superRepositoryClassPackage};
 
 /**
- * @Description : $!{table.comment} ${table.mapperName}
+ * @Description : $!{table.comment} ${table.repositoryName}【持久化类】
  * @time 创建时间 : ${date}
  * @author : ${author}
  * @Copyright (c) ${date} 易视腾科技
  * @version $!{cfg.version}
  */
 @Repository
-public interface ${table.mapperName} extends ${superMapperClass}<${entity}> {
+public interface ${table.repositoryName} extends ${superRepositoryClass}<${entity}, Long> {
 ##    /**自动生成 ${date} */
 ##    public List<Map<String,Object>> selectMapList(Page<Map<String,Object>> page, Map params);
-#if(${cfg.getLabelAndValueList})
-    /**自动生成 ${date} */
-    public List<Map<String,Object>> getLabelAndValueList(Map<String,Object> params);
-#end
+###if(${cfg.getLabelAndValueList})
+##    /**自动生成 ${date} */
+##    public List<Map<String,Object>> getLabelAndValueList(Map<String,Object> params);
+###end
 
 #if(${cfg.needEmptyMethod})
     #foreach($monthName in ${cfg.emptyMethods})

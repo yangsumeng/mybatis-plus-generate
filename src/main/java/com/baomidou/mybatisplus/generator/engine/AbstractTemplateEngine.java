@@ -171,6 +171,32 @@ public abstract class AbstractTemplateEngine {
             this.writer(objectMap, this.templateFilePath(template.getController()), controllerFile);
           }
         }
+          // MpVo.java
+          if (null != tableInfo.getVoName() && null != pathInfo.get(ConstVal.VO_PATH)) {
+              String voFile =
+                      String.format(
+                              (pathInfo.get(ConstVal.VO_PATH)
+                                      + File.separator
+                                      + tableInfo.getVoName()
+                                      + this.suffixJavaOrKt()),
+                              entityName);
+              if (this.isCreate(voFile)) {
+                  this.writer(objectMap, this.templateFilePath(template.getVo()), voFile);
+              }
+          }
+          // MpForm.java
+          if (null != tableInfo.getFormName() && null != pathInfo.get(ConstVal.FORM_PATH)) {
+              String formFile =
+                      String.format(
+                              (pathInfo.get(ConstVal.FORM_PATH)
+                                      + File.separator
+                                      + tableInfo.getFormName()
+                                      + this.suffixJavaOrKt()),
+                              entityName);
+              if (this.isCreate(formFile)) {
+                  this.writer(objectMap, this.templateFilePath(template.getForm()), formFile);
+              }
+          }
       }
     } catch (Exception e) {
       logger.error("无法创建文件，请检查配置信息！", e);

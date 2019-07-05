@@ -81,6 +81,8 @@ public class GlobalConfig {
     private String serviceImplName;
     private String controllerName;
     private String entityName;
+    private String formName;
+    private String voName;
     /**
      * 指定生成的主键的ID类型
      */
@@ -88,6 +90,24 @@ public class GlobalConfig {
 
     public GlobalConfig setIdType(IdType idType) {
         this.idType = idType;
+        return this;
+    }
+
+    public String getFormName() {
+        return formName;
+    }
+
+    public GlobalConfig setFormName(String formName) {
+        this.formName = formName;
+        return this;
+    }
+
+    public String getVoName() {
+        return voName;
+    }
+
+    public GlobalConfig setVoName(String voName) {
+        this.voName = voName;
         return this;
     }
 

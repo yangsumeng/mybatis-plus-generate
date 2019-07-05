@@ -40,6 +40,8 @@ public class TableInfo {
     private String comment;
 
     private String originalEntityName;
+    private String formName;
+    private String voName;
     private String entityName;
     private String mapperName;
     private String repositoryName;
@@ -100,8 +102,8 @@ public class TableInfo {
 
     public String getEntityPath() {
         StringBuilder ep = new StringBuilder();
-        ep.append(entityName.substring(0, 1).toLowerCase());
-        ep.append(entityName.substring(1));
+        ep.append(originalEntityName.substring(0, 1).toLowerCase());
+        ep.append(originalEntityName.substring(1));
         return ep.toString();
     }
 
@@ -176,6 +178,22 @@ public class TableInfo {
 
     public List<TableField> getFields() {
         return fields;
+    }
+
+    public String getFormName() {
+        return formName;
+    }
+
+    public void setFormName(String formName) {
+        this.formName = formName;
+    }
+
+    public String getVoName() {
+        return voName;
+    }
+
+    public void setVoName(String voName) {
+        this.voName = voName;
     }
 
     public void setFields(List<TableField> fields) {

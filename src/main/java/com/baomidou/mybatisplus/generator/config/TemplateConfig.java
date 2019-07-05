@@ -31,6 +31,9 @@ public class TemplateConfig {
 
   private String repository = ConstVal.TEMPLATE_REPOSITORY;
 
+  private String form = ConstVal.TEMPLATE_FORM;
+  private String vo = ConstVal.TEMPLATE_VO;
+
   private String xml = ConstVal.TEMPLATE_XML;
 
   private String controller = ConstVal.TEMPLATE_CONTROLLER;
@@ -80,7 +83,25 @@ public class TemplateConfig {
     return this;
   }
 
-  public String getXml() {
+    public String getForm() {
+        return form;
+    }
+
+    public TemplateConfig setForm(String form) {
+        this.form = form;
+        return this;
+    }
+
+    public String getVo() {
+        return vo;
+    }
+
+    public TemplateConfig setVo(String vo) {
+        this.vo = vo;
+        return this;
+    }
+
+    public String getXml() {
     return xml;
   }
 

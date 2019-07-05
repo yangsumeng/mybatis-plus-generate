@@ -43,6 +43,12 @@ public class PackageConfig {
   /** Repository包名 */
   private String repository = "repository";
 
+  /** form包名 */
+  private String form = "form";
+
+  /** form包名 */
+  private String vo = "vo";
+
   /** Mapper XML包名 */
   private String xml = "mapper.xml";
 
@@ -115,7 +121,25 @@ public class PackageConfig {
     return this;
   }
 
-  public String getXml() {
+    public String getForm() {
+        return form;
+    }
+
+    public PackageConfig setForm(String form) {
+        this.form = form;
+        return this;
+    }
+
+    public String getVo() {
+        return vo;
+    }
+
+    public PackageConfig setVo(String vo) {
+        this.vo = vo;
+        return this;
+    }
+
+    public String getXml() {
     return xml;
   }
 

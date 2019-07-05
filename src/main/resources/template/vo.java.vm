@@ -1,22 +1,30 @@
-package com.ebei.server.vo;
+package ${package.Vo};
 
 import java.util.Date;
-#if(${entityLombokModel})
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-#end
+import org.springframework.data.domain.Page;
 
+/**
+ * @Description : $!{table.comment}【分页对象】
+ * @time 创建时间 : ${date}
+ * @author : ${author}
+ * @Copyright (c) ${date} 易视腾科技
+ * @version $!{cfg.version}
+ */
 #if(${entityLombokModel})
 @Data
 #end
-public class ${entity}Params {
-
-## ----------  BEGIN 字段循环遍历  ----------
-#foreach($field in ${table.fields})
-#if(${field.keyFlag})
-#set($keyPropertyName=${field.propertyName})
-#end
-    private ${field.propertyType} ${field.propertyName};
-#end
-## ----------  END 字段循环遍历  ----------
-
+@ApiModel("$!{table.comment}$${table.VoName}【分页对象】")
+@Builder
+@NotNull
+@AllArgsConstructor
+public class ${table.VoName} {
+    @ApiModelProperty(value = "数据列表")
+    private Page<CpContentEntity> data;
+    @ApiModelProperty(value = "总数")
+    private Long totalCount;
 }

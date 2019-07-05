@@ -70,6 +70,8 @@ public class CodeGenerator {
                 .setIdType(type)               /* 主键策略*/
                 .setEntityName("%sEntity")
                 .setServiceName("I%sService")    /* 设置生成的service接口的名字的首字母是否为I,例:IEmployeeService*/
+                .setRepositoryName("%sRepository")
+                .setVoName("%sListResp")
                 .setBaseResultMap(true)
                 .setBaseColumnList(true)
                 .setEnableCache(false)
@@ -93,16 +95,24 @@ public class CodeGenerator {
 		strategy.setRestControllerStyle(true);
         strategy.setEntityLombokModel(true);
 		strategy.setLogicDeleteFieldName(logicDeleteFieldName);
+        strategy.setSuperServiceClass("com.ysten.conts.cps.service.base.IBaseService");
+        strategy.setSuperServiceImplClass("com.ysten.conts.cps.service.base.impl.JpaBaseService");
+        strategy.setSuperRepositoryClass("com.ysten.conts.cps.repository.base.IJpaBaseRepository");
+        strategy.setSuperControllerClass("com.ysten.conts.cps.controller.base.BaseController");
 		autoGenerator.setStrategy(strategy);
 
 		// 4. 包名策略配置
 		PackageConfig pc = new PackageConfig();
-		pc.setParent(parent).setMapper(String.format("repository.%s.entity",modelName))
+		pc.setParent(parent)
+                .setMapper(String.format("repository.%s.mapper",modelName))
 				.setService(String.format("service.%s",modelName))
                 .setServiceImpl(String.format("service.%s.impl",modelName))
 				.setController(String.format("controller.%s",modelName))
 				.setEntity(String.format("repository.%s.entity",modelName))
-				.setXml("mapper");
+                .setRepository(String.format("repository.%s",modelName))
+                .setForm(String.format("controller.%s.form",modelName))
+                .setVo(String.format("controller.%s.vo",modelName))
+				.setXml(String.format("repository.%s.mapper",modelName));
 		autoGenerator.setPackageInfo(pc);
 
 		// 5. 自定义模版配置
@@ -113,7 +123,10 @@ public class CodeGenerator {
         tc.setEntity("/template/entity.java.vm");
         tc.setMapper("/template/mapper.java.vm");
         tc.setEntity("/template/entity.java.vm");
-        tc.setXml(null);
+        tc.setRepository("/template/repository.java.vm");
+        tc.setForm("/template/form.java.vm");
+        tc.setVo("/template/vo.java.vm");
+        tc.setXml("/template/mapper.xml.vm");
 
 		autoGenerator.setTemplate(tc);
 
@@ -127,32 +140,32 @@ public class CodeGenerator {
         };
 
         /* 自定义生成路径(可无) Mapper为自定义目录 */
-		if(null == mapperPath || "".equals(mapperPath)){
-			mapperPath = outPutDir + "\\..\\resources\\mapper";
-		}
-        mkDir(new File(mapperPath));
-
+//		if(null == mapperPath || "".equals(mapperPath)){
+//			mapperPath = outPutDir + "\\..\\resources\\mapper";
+//		}
+//        mkDir(new File(mapperPath));
+//
         /* 添加文件*/
-		final String mapperPath1 = mapperPath;
+//		final String mapperPath1 = mapperPath;
         List<FileOutConfig> fileOutList = new ArrayList<>();
-        fileOutList.add(new FileOutConfig("/template/mapper.xml.vm") {
-            @Override
-            public String outputFile(TableInfo tableInfo) {
-                return outPutDir + "\\com\\ysten\\conts\\cps\\repository\\" +modelName+"\\mapper\\"+ tableInfo.getEntityName()+ "Mapper.xml";
-            }
-        });
-        fileOutList.add(new FileOutConfig("/template/vo.java.vm") {
-            @Override
-            public String outputFile(TableInfo tableInfo) {
-                return outPutDir + "\\com\\ysten\\conts\\cps\\controller\\" +modelName+"\\vo\\"+ tableInfo.getEntityName() + "Vo.java";
-            }
-        });
-        fileOutList.add(new FileOutConfig("/template/form.java.vm") {
-            @Override
-            public String outputFile(TableInfo tableInfo) {
-                return outPutDir + "\\com\\ysten\\conts\\cps\\controller\\"+modelName+"\\form\\" + tableInfo.getEntityName() + "ListResp.java";
-            }
-        });
+//        fileOutList.add(new FileOutConfig("/template/mapper.xml.vm") {
+//            @Override
+//            public String outputFile(TableInfo tableInfo) {
+//                return outPutDir + "\\com\\ysten\\conts\\cps\\repository\\" +modelName+"\\mapper\\"+ tableInfo.getOriginalEntityName()+ "Mapper.xml";
+//            }
+//        });
+//        fileOutList.add(new FileOutConfig("/template/vo.java.vm") {
+//            @Override
+//            public String outputFile(TableInfo tableInfo) {
+//                return outPutDir + "\\com\\ysten\\conts\\cps\\controller\\"+modelName+"\\vo\\" + tableInfo.getOriginalEntityName() + "ListResp.java";
+//            }
+//        });
+//        fileOutList.add(new FileOutConfig("/template/form.java.vm") {
+//            @Override
+//            public String outputFile(TableInfo tableInfo) {
+//                return outPutDir + "\\com\\ysten\\conts\\cps\\controller\\" +modelName+"\\form\\"+ tableInfo.getOriginalEntityName() + "Form.java";
+//            }
+//        });
 
 
 		injectionConfig.setFileOutConfigList(fileOutList);

@@ -202,6 +202,8 @@ public class ConfigBuilder {
     packageInfo.put(ConstVal.SERVICE, joinPackage(config.getParent(), config.getService()));
     packageInfo.put(ConstVal.SERVICEIMPL, joinPackage(config.getParent(), config.getServiceImpl()));
     packageInfo.put(ConstVal.CONTROLLER, joinPackage(config.getParent(), config.getController()));
+    packageInfo.put("Vo", joinPackage(config.getParent(), config.getVo()));
+    packageInfo.put("Form", joinPackage(config.getParent(), config.getForm()));
 
     // 生成路径信息
     pathInfo = new HashMap<>(6);
@@ -212,8 +214,7 @@ public class ConfigBuilder {
       pathInfo.put(ConstVal.MAPPER_PATH, joinPath(outputDir, packageInfo.get(ConstVal.MAPPER)));
     }
     if (StringUtils.isNotEmpty(template.getRepository())) {
-      pathInfo.put(
-          ConstVal.REPOSITORY_PATH, joinPath(outputDir, packageInfo.get(ConstVal.REPOSITORY)));
+      pathInfo.put(ConstVal.REPOSITORY_PATH, joinPath(outputDir, packageInfo.get(ConstVal.REPOSITORY)));
     }
     if (StringUtils.isNotEmpty(template.getXml())) {
       pathInfo.put(ConstVal.XML_PATH, joinPath(outputDir, packageInfo.get(ConstVal.XML)));
@@ -222,13 +223,17 @@ public class ConfigBuilder {
       pathInfo.put(ConstVal.SERVICE_PATH, joinPath(outputDir, packageInfo.get(ConstVal.SERVICE)));
     }
     if (StringUtils.isNotEmpty(template.getServiceImpl())) {
-      pathInfo.put(
-          ConstVal.SERVICEIMPL_PATH, joinPath(outputDir, packageInfo.get(ConstVal.SERVICEIMPL)));
+      pathInfo.put(ConstVal.SERVICEIMPL_PATH, joinPath(outputDir, packageInfo.get(ConstVal.SERVICEIMPL)));
     }
     if (StringUtils.isNotEmpty(template.getController())) {
-      pathInfo.put(
-          ConstVal.CONTROLLER_PATH, joinPath(outputDir, packageInfo.get(ConstVal.CONTROLLER)));
+      pathInfo.put(ConstVal.CONTROLLER_PATH, joinPath(outputDir, packageInfo.get(ConstVal.CONTROLLER)));
     }
+      if (StringUtils.isNotEmpty(template.getVo())) {
+          pathInfo.put(ConstVal.VO_PATH, joinPath(outputDir, packageInfo.get(ConstVal.VO)));
+      }
+      if (StringUtils.isNotEmpty(template.getForm())) {
+          pathInfo.put(ConstVal.FORM_PATH, joinPath(outputDir, packageInfo.get(ConstVal.FORM)));
+      }
   }
 
   /**
@@ -297,6 +302,18 @@ public class ConfigBuilder {
     for (TableInfo tableInfo : tableList) {
       tableInfo.setEntityName(strategyConfig, NamingStrategy.capitalFirst(processName(tableInfo.getName(), strategy, tablePrefix)));
       tableInfo.setOriginalEntityName(tableInfo.getEntityName());
+
+        if (StringUtils.isNotEmpty(globalConfig.getVoName())) {
+            tableInfo.setVoName(String.format(globalConfig.getVoName(), tableInfo.getEntityName()));
+        } else {
+            tableInfo.setVoName(tableInfo.getEntityName() + "Vo");
+        }
+
+        if (StringUtils.isNotEmpty(globalConfig.getFormName())) {
+            tableInfo.setFormName(String.format(globalConfig.getFormName(), tableInfo.getEntityName()));
+        } else {
+            tableInfo.setFormName(tableInfo.getEntityName() + "Form");
+        }
 
       if (StringUtils.isNotEmpty(globalConfig.getRepositoryName())) {
         tableInfo.setRepositoryName(String.format(globalConfig.getRepositoryName(), tableInfo.getEntityName()));

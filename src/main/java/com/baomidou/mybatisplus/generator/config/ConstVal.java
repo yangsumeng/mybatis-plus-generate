@@ -32,6 +32,8 @@ public class ConstVal {
   public static final String REPOSITORY = "Repository";
   public static final String XML = "Xml";
   public static final String CONTROLLER = "Controller";
+    public static final String FORM = "Form";
+    public static final String VO = "Vo";
 
   public static final String ENTITY_PATH = "entity_path";
   public static final String SERVICE_PATH = "service_path";
@@ -40,6 +42,8 @@ public class ConstVal {
   public static final String REPOSITORY_PATH = "repository_path";
   public static final String XML_PATH = "xml_path";
   public static final String CONTROLLER_PATH = "controller_path";
+    public static final String FORM_PATH = "form_path";
+    public static final String VO_PATH = "vo_path";
 
   public static final String JAVA_TMPDIR = "java.io.tmpdir";
   public static final String UTF8 = Charset.forName("UTF-8").name();
@@ -53,6 +57,8 @@ public class ConstVal {
   public static final String TEMPLATE_ENTITY_KT = "/templates/entity.kt";
   public static final String TEMPLATE_MAPPER = "/templates/mapper.java";
   public static final String TEMPLATE_REPOSITORY = "/templates/repository.java";
+  public static final String TEMPLATE_FORM = "/templates/form.java";
+  public static final String TEMPLATE_VO = "/templates/vo.java";
   public static final String TEMPLATE_XML = "/templates/mapper.xml";
   public static final String TEMPLATE_SERVICE = "/templates/service.java";
   public static final String TEMPLATE_SERVICEIMPL = "/templates/serviceImpl.java";

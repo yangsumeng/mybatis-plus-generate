@@ -25,13 +25,12 @@ import lombok.Data;
 #end
 
 
-/** $!{cfg.version}
- * <p>
- * $!{table.comment}【实体类】
- * </p>
- *  自动生成 ${date}
- * @author ${author}
- * @since ${date}
+/**
+ * @Description : $!{table.comment}【实体类】
+ * @time 创建时间 : ${date}
+ * @author : ${author}
+ * @Copyright (c) ${date} 易视腾科技
+ * @version $!{cfg.version}
  */
 #if(${entityLombokModel})
 @Data
