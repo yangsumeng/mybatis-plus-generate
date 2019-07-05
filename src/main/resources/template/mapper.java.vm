@@ -1,0 +1,40 @@
+package ${package.Mapper};
+
+import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.baomidou.mybatisplus.plugins.Page;
+import ${package.Entity}.${entity};
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Map;
+/** $!{cfg.version}
+ * 
+ * @Description : ${entity}Mapper
+ * @time 创建时间 : ${date}
+ * @author : ${author}
+ * @Copyright (c) ${year} 一碑科技
+ * @version
+ */
+@Repository
+public interface ${table.mapperName} extends ${superMapperClass}<${entity}> {
+    /**自动生成 ${date} */
+    public List<Map<String,Object>> selectMapList(Page<Map<String,Object>> page, Map params);
+#if(${cfg.getLabelAndValueList})
+    /**自动生成 ${date} */
+    public List<Map<String,Object>> getLabelAndValueList(Map<String,Object> params);
+#end
+
+#if(${cfg.needEmptyMethod})
+    #foreach($monthName in ${cfg.emptyMethods})
+    /**
+     *  $monthName 方法
+     *  自动生成 ${date}
+     */
+    #if(${monthName.endsWith("Page")})
+    public List<Map<String,Object>> ${monthName}(Page<Map<String,Object>> page,Map<String,Object> params);
+    #else
+    public List<Map<String,Object>> ${monthName}(Map<String,Object> params);
+    #end
+    #end
+#end
+}

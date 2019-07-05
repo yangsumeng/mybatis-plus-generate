@@ -1,0 +1,238 @@
+#** 获取主键pkField，多列主键不支持*#
+#foreach($field in ${table.fields})
+	#if(${field.keyFlag})
+		#set($pkField=${field})
+	#elseif(${logicDeleteFieldName}==${field.name})
+		#set($logicDeleteField=${field})
+	#elseif("creator"==${field.name})
+		#set($creatorField=${field})
+	#elseif("operator"==${field.name})
+		#set($operatorField=${field})
+	#elseif("operate_date"==${field.name})
+		#set($operateDateField=${field})
+	#elseif("create_date"==${field.name})
+        #set($createDateField=${field})
+    #elseif("timestamp_version"==${field.name})
+        #set($versionField=${field})
+	#end
+#end
+package ${package.Controller};
+
+import java.util.Date;
+import java.util.Map;
+import java.util.List;
+import java.util.HashMap;
+
+import com.ebei.device.common.constant.Constance;
+import com.ebei.device.common.util.ResponsePageEx;
+import com.ebei.device.common.util.ResponseEx;
+import io.swagger.annotations.*;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
+
+import com.baomidou.mybatisplus.plugins.Page;
+import ${package.Entity}.${entity};
+import ${package.Service}.${table.serviceName};
+
+#if(${superControllerClassPackage})
+import ${superControllerClassPackage};
+#end
+
+/** $!{cfg.version}
+ * <p>
+ * $!{table.comment} 前端控制器
+ * </p>
+ * @author ${author}
+ * @since ${date}
+ */
+#if(${restControllerStyle})
+@RestController
+#else
+@Controller
+#end
+@RequestMapping("#if(${package.ModuleName})/${package.ModuleName}#end/#if(${controllerMappingHyphenStyle})${controllerMappingHyphen}#else${table.entityPath}#end")
+@Api(value = "${table.entityPath}" , description = "${table.comment}")
+#if(${kotlin})
+class ${table.controllerName}#if(${superControllerClass}) : ${superControllerClass}()#end
+
+#else
+#if(${superControllerClass})
+public class ${table.controllerName} extends ${superControllerClass} {
+#else
+public class ${table.controllerName} {
+#end
+	@Autowired
+	private ${table.serviceName} ${table.entityPath}Service;
+
+	/**自动生成 ${date} $!{cfg.version}*/
+	@ApiOperation(value = "按照${table.entityPath}ID获取详情", notes = "获取${table.entityPath}详细信息")
+	@ApiImplicitParam(name = "${table.entityPath}Id", value = "主键ID", required = true, dataType = "String", paramType = "query")
+	@GetMapping("findById")
+	public ResponseEx<${entity}> getById(@RequestParam String ${table.entityPath}Id) {
+
+		${entity} ${table.entityPath} = ${table.entityPath}Service.selectById(${table.entityPath}Id);
+        return ResponseEx.createSuccess(${table.entityPath});
+	}
+
+	/**自动生成 ${date} $!{cfg.version}*/
+	@ApiOperation(value="获取分页数据")
+	@ApiImplicitParams({
+#foreach($field in ${table.fields})
+	#if(${field.name} != "state" && ${field.name} != "operator" && ${field.name} != "creator" && ${field.name} != "operate_date" && ${field.name} != "create_date")
+			@ApiImplicitParam(name = "${field.propertyName}", value = "${field.comment}", paramType = "query"),
+	#end
+#end
+			@ApiImplicitParam(name = "pageSize", value = "每页数", required = true, paramType = "query"),
+			@ApiImplicitParam(name = "pageIndex", value = "当前页", required = true, paramType = "query")
+	})
+	@GetMapping("findPageList")
+	public ResponsePageEx<Object> findPageList(
+#foreach($field in ${table.fields})
+	#if(${field.name} != "state" && ${field.name} != "operator" && ${field.name} != "creator" && ${field.name} != "operate_date" && ${field.name} != "create_date")
+							@RequestParam(required = false) ${field.propertyType} ${field.propertyName},
+	#end
+#end
+							@RequestParam int pageSize,
+							@RequestParam int pageIndex) {
+        ResponsePageEx<Object>  result = ResponsePageEx.createError("校验未通过");
+        Map<String, Object> params = new HashMap<String, Object>(8);
+	#foreach($field in ${table.fields})
+		#if(${field.name} != "state" && ${field.name} != "operator" && ${field.name} != "creator" && ${field.name} != "operate_date" && ${field.name} != "create_date")
+		params.put("${field.propertyName}",${field.propertyName}); //${field.comment}
+		#end
+	#end
+		#if($logicDeleteField)
+		if(null == params.get("$logicDeleteField.propertyName")){
+			params.put("$logicDeleteField.propertyName", Constance.STATE_YES); 		//${field.comment}
+		}
+		#end
+
+        if(pageSize > 0 && pageIndex > 0){
+			Page<Map<String,Object>> page = ${table.entityPath}Service.selectMapList(new Page<>(pageIndex, pageSize), params);
+			result =  ResponsePageEx.createSuccess(page.getRecords(), page.getTotal(), page.getCurrent(), page.getSize(), page.getPages());
+        }
+		return result;
+	}
+
+	/**自动生成 ${date} $!{cfg.version}*/
+	@ApiOperation(value="新增${table.entityPath}")
+	@PostMapping("/save${entity}")
+	public ResponseEx<Object> save${entity}(@RequestBody @ApiParam(name="param",value="参数JSON",required=true) ${entity} ${table.entityPath}, @RequestHeader HttpHeaders headers) {
+		//String userAccount = headers.getFirst(Constants.USER_HEADER);
+	#if(${creatorField} && ${operatorField})
+		${table.entityPath}.set${creatorField.capitalName}(${table.entityPath}.get${operatorField.capitalName}());
+	#end
+	#if(${operateDateField})
+		${table.entityPath}.set${operateDateField.capitalName}(new Date());
+	#end
+	#if(${createDateField})
+		${table.entityPath}.set${createDateField.capitalName}(new Date());
+	#end
+	#if(${logicDeleteField})
+		${table.entityPath}.set${logicDeleteField.capitalName}(Constance.STATE_YES);
+	#end
+    #if($versionField)
+        if(null == ${table.entityPath}.get${versionField.capitalName}()){
+            ${table.entityPath}.set${versionField.capitalName}(new Date().getTime());
+        }
+    #end
+		boolean result = ${table.entityPath}Service.insert(${table.entityPath});
+		if (!result) {
+			return ResponseEx.createError("新增失败");
+		}
+		return ResponseEx.createSuccess("success");
+	}
+	
+	@ApiOperation(value="编辑${table.entityPath}")
+	@PostMapping("edit${entity}")
+	public ResponseEx<Object> edit${entity}(@RequestBody @ApiParam(name="param",value="参数JSON",required=true) ${entity} ${table.entityPath}, @RequestHeader HttpHeaders headers) {
+		// 设置主键ID
+        //String userAccount = headers.getFirst(Constants.USER_HEADER);
+		if(null == ${table.entityPath}.get${pkField.capitalName}()){
+        	return ResponseEx.createError("主键为空："+"${pkField.propertyName}");
+        }
+	#if(${operateDateField})
+		${table.entityPath}.set${operateDateField.capitalName}(new Date());
+	#end
+		boolean result = ${table.entityPath}Service.updateById(${table.entityPath});
+        if (!result) {
+        	return ResponseEx.createError("修改失败");
+        }
+        return ResponseEx.createSuccess("success");
+	}
+
+	/**自动生成 ${date} $!{cfg.version}*/
+	@ApiOperation(value = "通过主键ID逻辑删除", notes = "逻辑删除$!{table.comment}实体")
+	@ApiImplicitParam(name = "${pkField.propertyName}", value = "主键ID", required = true, dataType = "String", paramType = "query")
+	@GetMapping("deleteById")
+	public ResponseEx<Object> deleteById(@RequestParam String ${pkField.propertyName}) {
+        boolean ok = ${table.entityPath}Service.deleteById(${pkField.propertyType}.valueOf(${pkField.propertyName}));
+        if(!ok){
+        	return ResponseEx.createError("删除失败");
+        }
+        return ResponseEx.createSuccess("删除成功");
+     }
+
+	#if(${cfg.getLabelAndValueList})
+    /**自动生成 用于前端下拉框选择 ${date}  $!{cfg.version}*/
+    @ApiImplicitParams({
+		#foreach($field in ${table.fields})
+			#if(${field.name} != "state" && ${field.name} != "operator" && ${field.name} != "creator" && ${field.name} != "operate_date" && ${field.name} != "create_date")
+                    @ApiImplicitParam(name = "${field.propertyName}", value = "${field.comment}", paramType = "query"),
+			#end
+		#end
+            @ApiImplicitParam(name = "state", value = "状态", required = true, paramType = "query")
+    })
+    @GetMapping("getLabelAndValueList")
+    public ResponseEx<Object> getLabelAndValueList(
+		#foreach($field in ${table.fields})
+			#if(${field.name} != "state" && ${field.name} != "operator" && ${field.name} != "creator" && ${field.name} != "operate_date" && ${field.name} != "create_date")
+            @RequestParam(required = false) ${field.propertyType} ${field.propertyName},
+			#end
+		#end
+    		@RequestParam(required = false) int state) {
+		Map<String, Object> params = new HashMap<String, Object>(8);
+		#foreach($field in ${table.fields})
+			#if(${field.name} != "state" && ${field.name} != "operator" && ${field.name} != "creator" && ${field.name} != "operate_date" && ${field.name} != "create_date")
+		if(null != ${field.propertyName}) params.put("${field.propertyName}",${field.propertyName});
+			#end
+		#end
+        List<Map<String,Object>> list = ${table.entityPath}Service.getLabelAndValueList(params);
+		return ResponseEx.createSuccess(list);
+	}
+	#end
+
+
+#if(${cfg.needEmptyMethod})
+	#foreach($monthName in ${cfg.emptyMethods})
+#if(${monthName.endsWith("Page")})
+	/**自动生成 ${date}  $!{cfg.version}*/
+	@ApiOperation(value = "${monthName} 方法")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "pageSize", value = "URL参数：每页显示数量", required = true, paramType = "query"),
+            @ApiImplicitParam(name = "pageIndex", value = "URL参数：当前页", required = true, paramType = "query")
+    })
+	@PostMapping("${monthName}")
+	public ResponsePageEx<Object> ${monthName}(@RequestParam int pageSize, @RequestParam int pageIndex){
+        Page page = new Page<>(pageIndex, pageSize);
+        List<Map<String,Object>> dataList = ${table.entityPath}Service.${monthName}(page,params);
+        return ResponsePageEx.createSuccess(dataList, page.getTotal(), page.getCurrent(), page.getSize(), page.getPages());
+	}
+#else
+	/**自动生成 ${date}  $!{cfg.version}*/
+	@ApiOperation(value = "${monthName} 方法")
+	@GetMapping("${monthName}")
+	public ResponseEx<Object> ${monthName}(){
+        Map<String,Object> params = null;
+	    Object result = ${table.entityPath}Service.${monthName}(params);
+        return ResponseEx.createSuccess("成功");
+	}
+#end
+
+	#end
+#end
+}
+#end

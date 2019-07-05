@@ -80,6 +80,7 @@ public class GlobalConfig {
     private String serviceName;
     private String serviceImplName;
     private String controllerName;
+    private String entityName;
     /**
      * 指定生成的主键的ID类型
      */
@@ -190,6 +191,15 @@ public class GlobalConfig {
 
     public GlobalConfig setRepositoryName(String repositoryName) {
         this.repositoryName = repositoryName;
+        return this;
+    }
+
+    public String getEntityName() {
+        return entityName;
+    }
+
+    public GlobalConfig setEntityName(String entityName) {
+        this.entityName = entityName;
         return this;
     }
 

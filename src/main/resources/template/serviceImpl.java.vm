@@ -1,0 +1,73 @@
+package ${package.ServiceImpl};
+
+import java.util.List;
+import java.util.Map;
+
+import ${package.Entity}.${entity};
+import ${package.Mapper}.${table.mapperName};
+import ${package.Service}.${table.serviceName};
+import ${superServiceImplClassPackage};
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import com.baomidou.mybatisplus.plugins.Page;
+
+/**	$!{cfg.version}
+ * <p>
+ * $!{table.comment} 服务实现类
+ * </p>
+ *
+ * @author ${author}
+ * @since ${date}
+ */
+@Service
+#if(${kotlin})
+open class ${table.serviceImplName} : ${superServiceImplClass}<${table.mapperName}, ${entity}>(), ${table.serviceName} {
+
+}
+#else
+public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.mapperName}, ${entity}> implements ${table.serviceName} {
+
+    @Autowired
+	${table.mapperName}  ${table.entityPath}Mapper;
+	/**自动生成 ${date} */
+    @Override
+	public Page<Map<String,Object>> selectMapList(Page<Map<String,Object>> page, Map<String,Object> params) {
+		List<Map<String,Object>> list = ${table.entityPath}Mapper.selectMapList(page,params);
+		return page.setRecords(list);
+	}
+
+	#if(${cfg.getLabelAndValueList})
+            /**
+             * $!{table.comment} 获取页面选择列表
+             *
+             * @author ${author}
+             * @since ${date}
+			 * 自动生成 ${date}
+             */
+	public List<Map<String,Object>> getLabelAndValueList(Map<String,Object> params){
+		List<Map<String,Object>> list = ${table.entityPath}Mapper.getLabelAndValueList(params);
+		return list;
+	}
+	#end
+
+#if(${cfg.needEmptyMethod})
+	#foreach($monthName in ${cfg.emptyMethods})
+	/**
+	 *  $monthName 方法
+	 *  自动生成 ${date}
+	 */
+#if(${monthName.endsWith("Page")})
+	public List<Map<String,Object>> ${monthName}(Page<Map<String,Object>> page,Map<String,Object> params){
+        List<Map<String,Object>> result = ${table.entityPath}Mapper.${monthName}(page,params);
+        return result;
+	}
+#else
+	public List<Map<String,Object>> ${monthName}(Map<String,Object> params){
+        List<Map<String,Object>> result = ${table.entityPath}Mapper.${monthName}(params);
+        return result;
+	}
+#end
+	#end
+#end
+}
+#end

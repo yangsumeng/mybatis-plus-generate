@@ -295,12 +295,11 @@ public class ConfigBuilder {
     String[] tablePrefix = config.getTablePrefix();
     String[] fieldPrefix = config.getFieldPrefix();
     for (TableInfo tableInfo : tableList) {
-      tableInfo.setEntityName(
-          strategyConfig,
-          NamingStrategy.capitalFirst(processName(tableInfo.getName(), strategy, tablePrefix)));
+      tableInfo.setEntityName(strategyConfig, NamingStrategy.capitalFirst(processName(tableInfo.getName(), strategy, tablePrefix)));
+      tableInfo.setOriginalEntityName(tableInfo.getEntityName());
+
       if (StringUtils.isNotEmpty(globalConfig.getRepositoryName())) {
-        tableInfo.setRepositoryName(
-            String.format(globalConfig.getRepositoryName(), tableInfo.getEntityName()));
+        tableInfo.setRepositoryName(String.format(globalConfig.getRepositoryName(), tableInfo.getEntityName()));
       } else {
         tableInfo.setMapperName(tableInfo.getEntityName() + ConstVal.REPOSITORY);
       }
@@ -316,23 +315,27 @@ public class ConfigBuilder {
         tableInfo.setXmlName(tableInfo.getEntityName() + ConstVal.MAPPER);
       }
       if (StringUtils.isNotEmpty(globalConfig.getServiceName())) {
-        tableInfo.setServiceName(
-            String.format(globalConfig.getServiceName(), tableInfo.getEntityName()));
+        tableInfo.setServiceName(String.format(globalConfig.getServiceName(), tableInfo.getEntityName()));
       } else {
         tableInfo.setServiceName("I" + tableInfo.getEntityName() + ConstVal.SERVICE);
       }
       if (StringUtils.isNotEmpty(globalConfig.getServiceImplName())) {
-        tableInfo.setServiceImplName(
-            String.format(globalConfig.getServiceImplName(), tableInfo.getEntityName()));
+        tableInfo.setServiceImplName(String.format(globalConfig.getServiceImplName(), tableInfo.getEntityName()));
       } else {
         tableInfo.setServiceImplName(tableInfo.getEntityName() + ConstVal.SERVICEIMPL);
       }
       if (StringUtils.isNotEmpty(globalConfig.getControllerName())) {
-        tableInfo.setControllerName(
-            String.format(globalConfig.getControllerName(), tableInfo.getEntityName()));
+        tableInfo.setControllerName(String.format(globalConfig.getControllerName(), tableInfo.getEntityName()));
       } else {
         tableInfo.setControllerName(tableInfo.getEntityName() + ConstVal.CONTROLLER);
       }
+
+        /*最后将重新设置bean名称也可以定制*/
+        if (StringUtils.isNotEmpty(globalConfig.getEntityName())) {
+            tableInfo.setEntityName(String.format(globalConfig.getEntityName(), tableInfo.getEntityName()));
+        } else {
+            tableInfo.setMapperName(tableInfo.getEntityName() + ConstVal.REPOSITORY);
+        }
       // 强制开启字段注解
       checkTableIdTableFieldAnnotation(config, tableInfo, fieldPrefix);
     }

@@ -1,0 +1,120 @@
+#foreach($field in ${table.fields})
+    #if(${field.keyFlag})
+        #set($pkField=${field})
+    #elseif($field.name == "operate_date")
+        #set($hasOperateDate = true)
+    #end
+#end
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="${package.Mapper}.${table.mapperName}">
+    <!-- $!{cfg.version} -->
+#if(${enableCache})
+    <!-- 开启二级缓存 -->
+    <cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
+
+#end
+#if(${baseResultMap})
+    <!-- 通用查询映射结果 自动生成 ${date} -->
+    <resultMap id="BaseResultMap" type="${package.Entity}.${entity}">
+#foreach($field in ${table.fields})
+#if(${field.keyFlag})##生成主键排在第一位
+        <id column="${field.name}" property="${field.propertyName}" />
+#end
+#end
+#foreach($field in ${table.commonFields})##生成公共字段
+    <result column="${field.name}" property="${field.propertyName}" />
+#end
+#foreach($field in ${table.fields})
+#if(!${field.keyFlag})##生成普通字段
+        <result column="${field.name}" property="${field.propertyName}" />
+#end
+#end
+    </resultMap>
+
+#end
+#if(${baseColumnList})
+    <!-- 通用查询结果列 自动生成 ${date} -->
+    <sql id="Base_Column_List">
+        #foreach($field in ${table.commonFields})
+            #if(${field.name} == ${field.propertyName})
+                ${field.name}
+            #else ${field.name} AS ${field.propertyName} #end,
+        #end
+        #foreach($field in ${table.fields})
+            #if(${field.name} == ${field.propertyName})${field.name}#else ${field.name} AS ${field.propertyName}#end
+            #if($!{table.fields.size()} > ${foreach.count}),#end
+        #end
+    </sql>
+#end
+
+    <!-- 自动生成 ${date} -->
+    <select id="selectMapList" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM ${table.name}
+        WHERE 1=1
+        #foreach($field in ${table.fields})
+            <if test="${field.propertyName} != null" >
+            #if(${field.name.endsWith("_name")})
+               and ${field.name} like CONCAT('%',#{${field.propertyName}},'%')
+            #else
+                and ${field.name} = #{${field.propertyName}}
+            #end
+            </if>
+        #end
+    </select>
+
+#if(${cfg.getLabelAndValueList})
+    <!-- 前端页面select框查询 自动生成 ${date} -->
+    <select id="getLabelAndValueList" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT
+    #if(${cfg.value.isNotNull()})
+        t.$!{cfg.value} as value,
+    #else
+        t.$!{pkField.name} as value,
+    #end
+    #if(${cfg.label.isNotNull()})
+        t.$!{cfg.label} as label
+    #else
+        #set($pkNamePrfix = $pkField.name.replace("_id", ""))
+        t.$!{pkNamePrfix}_name as label
+    #end
+        FROM ${table.name} t
+        WHERE 1=1 and t.$logicDeleteFieldName =1
+#foreach($field in ${table.fields})
+    #if(${field.name.endsWith("_id")})
+    <if test="${field.propertyName} != null" >
+        and t.${field.name} = #{${field.propertyName}}
+    </if>
+    #end
+#end
+    #if(${cfg.order.isNotNull()})
+        order by t.${cfg.order}
+    #elseif($hasOperateDate)
+        order by t.operate_date desc
+    #end
+    </select>
+#end
+
+#if(${cfg.needEmptyMethod})
+    #foreach($monthName in ${cfg.emptyMethods})
+    <!-- $monthName 方法 自动生成 ${date} -->
+    <select id="${monthName}" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT * from ${table.name} t where 1=1 and t.$logicDeleteFieldName =1
+        #if(${field.name.endsWith("_id")})
+            <if test="${field.propertyName} != null" >
+                and t.${field.name} = #{${field.propertyName}}
+            </if>
+        #elseif(${field.name.endsWith("_name")})
+            <if test="${field.propertyName} != null" >
+                and t.${field.name} like CONCAT('%',#{${field.propertyName}},'%')
+            </if>
+        #elseif(${field.name} == "timestamp_version")
+            and t.timestamp_version <![CDATA[>]]> #{timeStampVersion}
+        #end
+    </select>
+    #end
+#end
+
+</mapper>

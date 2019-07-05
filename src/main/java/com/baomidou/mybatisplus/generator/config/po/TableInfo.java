@@ -39,6 +39,7 @@ public class TableInfo {
     private String name;
     private String comment;
 
+    private String originalEntityName;
     private String entityName;
     private String mapperName;
     private String repositoryName;
@@ -111,6 +112,18 @@ public class TableInfo {
     public void setEntityName(StrategyConfig strategyConfig, String entityName) {
         this.entityName = entityName;
         this.setConvert(strategyConfig);
+    }
+
+    public void setEntityName( String entityName) {
+        this.entityName = entityName;
+    }
+
+    public String getOriginalEntityName() {
+        return originalEntityName;
+    }
+
+    public void setOriginalEntityName(String originalEntityName) {
+        this.originalEntityName = originalEntityName;
     }
 
     public String getMapperName() {

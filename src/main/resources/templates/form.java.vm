@@ -1,0 +1,22 @@
+package com.ebei.server.vo;
+
+import java.util.Date;
+#if(${entityLombokModel})
+import lombok.Data;
+#end
+
+#if(${entityLombokModel})
+@Data
+#end
+public class ${entity}Params {
+
+## ----------  BEGIN 字段循环遍历  ----------
+#foreach($field in ${table.fields})
+#if(${field.keyFlag})
+#set($keyPropertyName=${field.propertyName})
+#end
+    private ${field.propertyType} ${field.propertyName};
+#end
+## ----------  END 字段循环遍历  ----------
+
+}
