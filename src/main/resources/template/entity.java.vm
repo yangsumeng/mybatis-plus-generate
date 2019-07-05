@@ -2,36 +2,32 @@
     #if(${field.propertyType} == 'BigDecimal')
         #set($hasBigDecimal=true)
     #end
+    #if(${field.propertyType} == 'Date' && !("create_time"==${field.name} || "update_time"==${field.name}))
+        #set($hasDate=true)
+    #end
 #end
-
 package ${package.Entity};
 
-import java.io.Serializable;
+#if($hasDate)
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+#end
 #if($hasBigDecimal)
 import java.math.BigDecimal;
 #end
-
-import com.baomidou.mybatisplus.activerecord.Model;
-import com.baomidou.mybatisplus.annotations.TableField;
-import com.baomidou.mybatisplus.annotations.TableId;
-import com.baomidou.mybatisplus.enums.FieldFill;
-#if(${logicDeleteFieldName}!="")
-import com.baomidou.mybatisplus.annotations.TableLogic;
-#end
-import com.baomidou.mybatisplus.annotations.TableName;
-import com.baomidou.mybatisplus.enums.IdType;
+import com.ysten.conts.cps.repository.base.entity.BaseEntity;
+import javax.persistence.Entity;
+import javax.persistence.Column;
+import javax.persistence.Table;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 #if(${entityLombokModel})
 import lombok.Data;
 #end
 
+
 /** $!{cfg.version}
  * <p>
- * $!{table.comment}
+ * $!{table.comment}【实体类】
  * </p>
  *  自动生成 ${date}
  * @author ${author}
@@ -40,75 +36,71 @@ import lombok.Data;
 #if(${entityLombokModel})
 @Data
 #end
+@Entity
 #if(${table.convert})
-@TableName("${table.name}")
+@Table("${table.name}")
 #end
-@ApiModel("$!{table.comment}${entity}")
-public class ${entity} extends Model<${entity}> {
-
+@ApiModel("$!{table.comment}${entity}【实体类】")
+public class ${entity} extends BaseEntity {
 ## ----------  BEGIN 字段循环遍历  ----------
 #foreach($field in ${table.fields})
+#if("id"==${field.name} || "create_by"==${field.name} || "create_time"==${field.name} || "update_by"==${field.name} || "update_time"==${field.name})
+## ----------  父类中的字段 不处理 ----------
+#else
 #if(${field.keyFlag})
 #set($keyPropertyName=${field.propertyName})
 #end
 #if("$!field.comment" != "")
     /** ${field.comment} */
 #end
+    @ApiModelProperty(value = "$!{field.comment}")
+    @Column(name = "${field.name}")
 #if(${field.keyFlag})
-## 主键
-#if(${field.keyIdentityFlag})
-    @ApiModelProperty(hidden=true)
-    @TableId(value = "${field.name}", type = IdType.AUTO)
-#elseif(!$null.isNull(${idType}) && "$!idType" != "")
-    @ApiModelProperty(hidden=true)
-    @TableId(value = "${field.name}", type = IdType.${idType})
-#elseif(${field.convert})
-    @TableId("${field.name}")
-#end
-## 普通字段
-#elseif(${field.fill})
-## -----   存在字段填充设置   -----
-#if(${field.convert})
-    @TableField(value = "${field.name}", fill = FieldFill.${field.fill})
-#else
-    @TableField(fill = FieldFill.${field.fill})
-#end
-#elseif(${field.convert})
-    @TableField("${field.name}")
-#end
-## 乐观锁注解
+#### 主键
+###if(${field.keyIdentityFlag})
+##    @ApiModelProperty(hidden=true)
+##    @TableId(value = "${field.name}", type = IdType.AUTO)
+###elseif(!$null.isNull(${idType}) && "$!idType" != "")
+##    @ApiModelProperty(hidden=true)
+##    @TableId(value = "${field.name}", type = IdType.${idType})
+###elseif(${field.convert})
+##    @TableId("${field.name}")
+###end
+#### 普通字段
+###elseif(${field.fill})
+#### -----   存在字段填充设置   -----
+###if(${field.convert})
+##    @TableField(value = "${field.name}", fill = FieldFill.${field.fill})
+###else
+##    @TableField(fill = FieldFill.${field.fill})
+###end
+###elseif(${field.convert})
+##    @TableField("${field.name}")
+#end## 乐观锁注解
 #if(${versionFieldName}==${field.name})
-    @Version
-#end
-## 逻辑删除注解
+@Version
+#end## 逻辑删除注解
 #if(${logicDeleteFieldName}==${field.name})
-    @ApiModelProperty(hidden=true)
-    @TableLogic
+@ApiModelProperty(hidden=true)
+@TableLogic
 #end
-    #if("create_date"==${field.name})
-    @ApiModelProperty(hidden=true)
-    #elseif("creator"==${field.name})
-    @ApiModelProperty(hidden=true)
-    #elseif("operate_date"==${field.name})
-    @ApiModelProperty(hidden=true)
-    #elseif("timestamp_version"==${field.name})
-    @ApiModelProperty(hidden=true)
-    #end
     private ${field.propertyType} ${field.propertyName};
+
+#end
 #end
 ## ----------  END 字段循环遍历  ----------
-    @ApiModelProperty(hidden=true)
-    @TableField(exist=false)
-    private Map<String,Object> extMap = new HashMap<String,Object>();
-    public Map<String, Object> getExtMap() {
-        return extMap;
-    }
-    public void setExtMap(Map<String, Object> extMap) {
-        this.extMap = extMap;
-    }
-    public void putExt(String key,Object value) {
-        this.extMap.put(key,value);
-    }
+##     @ApiModelProperty(hidden=true)
+##     @TableField(exist=false)
+##     private Map<String,Object> extMap = new HashMap<String,Object>();
+##     public Map<String, Object> getExtMap() {
+##         return extMap;
+##     }
+##     public void setExtMap(Map<String, Object> extMap) {
+##         this.extMap = extMap;
+##     }
+##     public void putExt(String key,Object value) {
+##         this.extMap.put(key,value);
+##     }
 #if(!${entityLombokModel})
 #foreach($field in ${table.fields})
 #if(${field.propertyType.equals("boolean")})
@@ -116,11 +108,9 @@ public class ${entity} extends Model<${entity}> {
 #else
 #set($getprefix="get")
 #end
-
     public ${field.propertyType} ${getprefix}${field.capitalName}() {
         return ${field.propertyName};
     }
-
 #if(${entityBuilderModel})
     public ${entity} set${field.capitalName}(${field.propertyType} ${field.propertyName}) {
 #else
@@ -133,11 +123,9 @@ public class ${entity} extends Model<${entity}> {
     }
 #end
 #end
-
 #if(${entityColumnConstant})
 #foreach($field in ${table.fields})
     public static final String ${field.name.toUpperCase()} = "${field.name}";
-
 #end
 #end
 #if(${activeRecord})
@@ -149,7 +137,6 @@ public class ${entity} extends Model<${entity}> {
         return this.${keyPropertyName};
 #end
     }
-
 #end
 #if(!${entityLombokModel})
     @Override
@@ -165,10 +152,9 @@ public class ${entity} extends Model<${entity}> {
         "}";
     }
 #end
-
-	@Override
-	protected Serializable pkVal() {
-		// TODO1
-		return null;
-	}
+##	@Override
+##	protected Serializable pkVal() {
+##		// TODO1
+##		return null;
+##	}
 }
