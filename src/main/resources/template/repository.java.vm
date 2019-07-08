@@ -9,7 +9,7 @@ import ${superRepositoryClassPackage};
  * @time 创建时间 : ${date}
  * @author : ${author}
  * @Copyright (c) ${date} 易视腾科技
- * @version $!{cfg.version}
+ * @version $!{version}
  */
 @Repository
 public interface ${table.repositoryName} extends ${superRepositoryClass}<${entity}, Long> {

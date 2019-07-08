@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
  * @time 创建时间 : ${date}
  * @author : ${author}
  * @Copyright (c) ${date} 易视腾科技
- * @version $!{cfg.version}
+ * @version $!{version}
  */
 @Repository
 public interface ${table.mapperName} extends ${superMapperClass}<${entity}> {

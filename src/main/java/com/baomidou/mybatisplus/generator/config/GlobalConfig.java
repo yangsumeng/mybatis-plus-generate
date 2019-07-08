@@ -27,6 +27,12 @@ import com.baomidou.mybatisplus.enums.IdType;
  */
 public class GlobalConfig {
 
+
+    /**
+     * 版本号
+     */
+    private String version = "0.0";
+
     /**
      * 生成文件的输出目录【默认 D 盘根目录】
      */
@@ -256,6 +262,15 @@ public class GlobalConfig {
 
     public GlobalConfig setControllerName(String controllerName) {
         this.controllerName = controllerName;
+        return this;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public GlobalConfig setVersion(String version) {
+        this.version = version;
         return this;
     }
 }

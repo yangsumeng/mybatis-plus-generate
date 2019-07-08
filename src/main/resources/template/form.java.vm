@@ -4,31 +4,31 @@ import java.util.Date;
 #if(${entityLombokModel})
 import lombok.Data;
 #end
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @Description : $!{table.comment}【前端交互对象】
  * @time 创建时间 : ${date}
  * @author : ${author}
  * @Copyright (c) ${date} 易视腾科技
- * @version $!{cfg.version}
+ * @version $!{version}
  */
 #if(${entityLombokModel})
 @Data
 #end
 @ApiModel("$!{table.comment}${entity}【实体类】")
 public class ${table.originalEntityName}Form {
-
 ## ----------  BEGIN 字段循环遍历  ----------
-    #foreach($field in ${table.fields})
-        #if(${field.keyFlag})
-            #set($keyPropertyName=${field.propertyName})
-        #end
-        #if("$!field.comment" != "")
-            /** ${field.comment} */
-        #end
-        @ApiModelProperty(value = "$!{field.comment}")
-        private ${field.propertyType} ${field.propertyName};
-    #end
+#foreach($field in ${table.fields})
+#if(${field.keyFlag})
+#set($keyPropertyName=${field.propertyName})
+#end
+#if("$!field.comment" != "")
+    /** ${field.comment} */
+#end
+    @ApiModelProperty(value = "$!{field.comment}")
+    private ${field.propertyType} ${field.propertyName};
+#end
 ## ----------  END 字段循环遍历  ----------
-
 }

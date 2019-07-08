@@ -261,18 +261,15 @@ public abstract class AbstractTemplateEngine {
     Map<String, Object> objectMap = new HashMap<>();
     ConfigBuilder config = this.getConfigBuilder();
     if (config.getStrategyConfig().isControllerMappingHyphenStyle()) {
-      objectMap.put(
-          "controllerMappingHyphenStyle",
-          config.getStrategyConfig().isControllerMappingHyphenStyle());
-      objectMap.put(
-          "controllerMappingHyphen", StringUtils.camelToHyphen(tableInfo.getEntityPath()));
+      objectMap.put("controllerMappingHyphenStyle", config.getStrategyConfig().isControllerMappingHyphenStyle());
+      objectMap.put("controllerMappingHyphen", StringUtils.camelToHyphen(tableInfo.getEntityPath()));
     }
     objectMap.put("restControllerStyle", config.getStrategyConfig().isRestControllerStyle());
     objectMap.put("package", config.getPackageInfo());
     GlobalConfig globalConfig = config.getGlobalConfig();
     objectMap.put("author", globalConfig.getAuthor());
-    objectMap.put(
-        "idType", globalConfig.getIdType() == null ? null : globalConfig.getIdType().toString());
+    objectMap.put("version", globalConfig.getVersion());
+    objectMap.put("idType", globalConfig.getIdType() == null ? null : globalConfig.getIdType().toString());
     objectMap.put("logicDeleteFieldName", config.getStrategyConfig().getLogicDeleteFieldName());
     objectMap.put("versionFieldName", config.getStrategyConfig().getVersionFieldName());
     objectMap.put("activeRecord", globalConfig.isActiveRecord());
@@ -286,9 +283,7 @@ public abstract class AbstractTemplateEngine {
     objectMap.put("entityColumnConstant", config.getStrategyConfig().isEntityColumnConstant());
     objectMap.put("entityBuilderModel", config.getStrategyConfig().isEntityBuilderModel());
     objectMap.put("entityLombokModel", config.getStrategyConfig().isEntityLombokModel());
-    objectMap.put(
-        "entityBooleanColumnRemoveIsPrefix",
-        config.getStrategyConfig().isEntityBooleanColumnRemoveIsPrefix());
+    objectMap.put("entityBooleanColumnRemoveIsPrefix", config.getStrategyConfig().isEntityBooleanColumnRemoveIsPrefix());
     objectMap.put("superEntityClass", this.getSuperClassName(config.getSuperEntityClass()));
     objectMap.put("superMapperClassPackage", config.getSuperMapperClass());
     objectMap.put("superMapperClass", this.getSuperClassName(config.getSuperMapperClass()));
@@ -297,8 +292,7 @@ public abstract class AbstractTemplateEngine {
     objectMap.put("superServiceClassPackage", config.getSuperServiceClass());
     objectMap.put("superServiceClass", this.getSuperClassName(config.getSuperServiceClass()));
     objectMap.put("superServiceImplClassPackage", config.getSuperServiceImplClass());
-    objectMap.put(
-        "superServiceImplClass", this.getSuperClassName(config.getSuperServiceImplClass()));
+    objectMap.put("superServiceImplClass", this.getSuperClassName(config.getSuperServiceImplClass()));
     objectMap.put("superControllerClassPackage", config.getSuperControllerClass());
     objectMap.put("superControllerClass", this.getSuperClassName(config.getSuperControllerClass()));
     return objectMap;

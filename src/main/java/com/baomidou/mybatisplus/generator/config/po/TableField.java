@@ -37,7 +37,13 @@ public class TableField {
      * 主键是否为自增类型
      */
     private boolean keyIdentityFlag;
+    /**
+     * 数据库字段
+     */
     private String name;
+    /**
+     * 数据类型类型  DbColumnType
+     */
     private String type;
     private String propertyName;
     private DbColumnType columnType;

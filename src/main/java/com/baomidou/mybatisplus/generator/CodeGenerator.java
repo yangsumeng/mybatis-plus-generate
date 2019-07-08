@@ -34,22 +34,22 @@ public class CodeGenerator {
     private static String userName = "root";
     private static  String password = "ysten123";
     /**"D:\\generator";*/
-    private static String outPutDir = "C:\\workspace\\cps\\cps-generator\\src\\main\\java\\";
+    private static String outPutDir = "C:\\workspace\\cps\\cps-backend\\src\\main\\java\\";
     private static boolean fileOverride = true;
     private static String[] includeArr = {"cps_sys_dictionary_type"};
     private static String tablePrefix = "cps_sys_";
     private static String modelName = "system";
     private static String logicDeleteFieldName  = "";
-    private static Map<String, Object> map = new HashMap<>();
-    static {
-        map.put("version","auto code version 1.4");
-        map.put("getLabelAndValueList", false);
-        //map.put("value", "area_id"); // 可设置 默认主键={X}_id
-        //map.put("label", "area_name");//可设置 默认名称={X}_name  X根据主键获取
-        //map.put("order", "operate_date desc");//非必填
-        map.put("needEmptyMethod",false);
-        map.put("emptyMethods","getDictIdNameList,getDictCodeNameList".split(","));
-    }
+//    private static Map<String, Object> map = new HashMap<>();
+//    static {
+//        map.put("version","auto code version 1.4");
+////        map.put("getLabelAndValueList", false);
+//        //map.put("value", "area_id"); // 可设置 默认主键={X}_id
+//        //map.put("label", "area_name");//可设置 默认名称={X}_name  X根据主键获取
+//        //map.put("order", "operate_date desc");//非必填
+////        map.put("needEmptyMethod",false);
+////        map.put("emptyMethods","getDictIdNameList,getDictCodeNameList".split(","));
+//    }
     private static String author = "yangsm";
     private static IdType type = IdType.AUTO;
     private static String mapperPath = null; //不设置默认是 ../resources/mapper
@@ -75,7 +75,8 @@ public class CodeGenerator {
                 .setBaseResultMap(true)
                 .setBaseColumnList(true)
                 .setEnableCache(false)
-                .setAuthor(author);
+                .setAuthor(author)
+                .setVersion("CPS_1.2.07.08");
 		autoGenerator.setGlobalConfig(gc);
 
 		// 2. 数据源配置
@@ -135,7 +136,8 @@ public class CodeGenerator {
         InjectionConfig injectionConfig = new InjectionConfig() {
             @Override
             public void initMap() {
-                this.setMap(map);
+                /**可添加自定义变量 模板中用$!{cfg.[key]}使用**/
+                this.setMap(new HashMap<String, Object>());
             }
         };
 
@@ -171,7 +173,7 @@ public class CodeGenerator {
 		injectionConfig.setFileOutConfigList(fileOutList);
 		autoGenerator.setCfg(injectionConfig);
 
-		// 5. 执行
+		// 5. 执行 AbstractTemplateEngine.getObjectMap 设置模板使用数据
 		autoGenerator.execute();
 
 		System.err.println("全局变量"+autoGenerator.getCfg().getMap());

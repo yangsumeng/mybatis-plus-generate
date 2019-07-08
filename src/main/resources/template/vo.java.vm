@@ -1,30 +1,40 @@
+#foreach($field in ${table.fields})
+    #if(${field.propertyType} == 'BigDecimal')
+        #set($hasBigDecimal=true)
+    #end
+    #if(${field.propertyType} == 'Date' && !("create_time"==${field.name} || "update_time"==${field.name}))
+        #set($hasDate=true)
+    #end
+#end
 package ${package.Vo};
 
-import java.util.Date;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.domain.Page;
+import ${package.Entity}.${entity};
+
+import javax.validation.constraints.NotNull;
 
 /**
  * @Description : $!{table.comment}【分页对象】
  * @time 创建时间 : ${date}
  * @author : ${author}
  * @Copyright (c) ${date} 易视腾科技
- * @version $!{cfg.version}
+ * @version $!{version}
  */
 #if(${entityLombokModel})
 @Data
 #end
-@ApiModel("$!{table.comment}$${table.VoName}【分页对象】")
+@ApiModel("$!{table.comment}${table.VoName}【分页对象】")
 @Builder
 @NotNull
 @AllArgsConstructor
 public class ${table.VoName} {
     @ApiModelProperty(value = "数据列表")
-    private Page<CpContentEntity> data;
+    private Page<${entity}> data;
     @ApiModelProperty(value = "总数")
     private Long totalCount;
 }

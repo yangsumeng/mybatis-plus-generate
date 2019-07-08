@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
  * @time 创建时间 : ${date}
  * @author : ${author}
  * @Copyright (c) ${date} 易视腾科技
- * @version $!{cfg.version}
+ * @version $!{version}
  */
 @Service
 @Transactional
@@ -27,7 +27,10 @@ open class ${table.serviceImplName} : ${superServiceImplClass}<${table.mapperNam
 public class ${table.serviceImplName} extends ${superServiceImplClass}<${entity}> implements ${table.serviceName} {
 
     @Autowired
-	${table.repositoryName}  ${table.entityPath}Repository;
+    ${superRepositoryClass}  ${table.entityPath}Repository;
+
+    @Autowired
+    ${table.mapperName}  ${table.entityPath}Mapper;
 
     @Override
     public ${superRepositoryClass}<${entity}, Long> getRepository() {

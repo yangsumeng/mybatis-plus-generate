@@ -8,7 +8,7 @@ import ${superServiceClassPackage};
  * @time 创建时间 : ${date}
  * @author : ${author}
  * @Copyright (c) ${date} 易视腾科技
- * @version $!{cfg.version}
+ * @version $!{version}
  */
 #if(${kotlin})
 interface ${table.serviceName} : ${superServiceClass}<${entity}>
@@ -17,8 +17,8 @@ public interface ${table.serviceName} extends ${superServiceClass}<${entity}> {
 ##	/**自动生成 ${date} */
 ##    public Page<Map<String,Object>> selectMapList(Page<Map<String,Object>> page, Map<String,Object> params);
 
-	/**自动生成 ${date} */
 	#if(${cfg.getLabelAndValueList})
+    /**自动生成 ${date} */
     public List<Map<String,Object>> getLabelAndValueList(Map<String,Object> params);
 	#end
 

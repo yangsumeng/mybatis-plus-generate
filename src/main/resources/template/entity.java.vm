@@ -30,14 +30,14 @@ import lombok.Data;
  * @time 创建时间 : ${date}
  * @author : ${author}
  * @Copyright (c) ${date} 易视腾科技
- * @version $!{cfg.version}
+ * @version $!{version}
  */
 #if(${entityLombokModel})
 @Data
 #end
 @Entity
 #if(${table.convert})
-@Table("${table.name}")
+@Table(name="${table.name}")
 #end
 @ApiModel("$!{table.comment}${entity}【实体类】")
 public class ${entity} extends BaseEntity {
@@ -84,7 +84,6 @@ public class ${entity} extends BaseEntity {
 @TableLogic
 #end
     private ${field.propertyType} ${field.propertyName};
-
 #end
 #end
 ## ----------  END 字段循环遍历  ----------
