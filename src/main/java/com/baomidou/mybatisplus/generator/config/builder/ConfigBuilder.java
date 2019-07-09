@@ -15,6 +15,7 @@ package com.baomidou.mybatisplus.generator.config.builder;
 
 import com.baomidou.mybatisplus.generator.InjectionConfig;
 import com.baomidou.mybatisplus.generator.config.*;
+import com.baomidou.mybatisplus.generator.config.po.StaticCell;
 import com.baomidou.mybatisplus.generator.config.po.TableField;
 import com.baomidou.mybatisplus.generator.config.po.TableFill;
 import com.baomidou.mybatisplus.generator.config.po.TableInfo;
@@ -537,6 +538,7 @@ public class ConfigBuilder {
   private TableInfo convertTableFields(TableInfo tableInfo, NamingStrategy strategy) {
     boolean haveId = false;
     List<TableField> fieldList = new ArrayList<>();
+    List<StaticCell> staticCellList = new ArrayList<>();
     List<TableField> commonFieldList = new ArrayList<>();
     try {
       String tableFieldsSql = dbQuery.tableFieldsSql();
@@ -578,6 +580,27 @@ public class ConfigBuilder {
         field.setPropertyName(strategyConfig, processName(field.getName(), strategy));
         field.setColumnType(dataSourceConfig.getTypeConvert().processTypeConvert(field.getType()));
         field.setComment(results.getString(dbQuery.fieldComment()));
+        try{
+            String comment = field.getComment();
+            if(StringUtils.isNotEmpty(comment)){
+                //兼容处理
+                comment = comment.replaceAll("，",",");
+                comment = comment.replaceAll("|",",");
+                comment = comment.replaceAll("：",":");
+                if(comment.contains("=")){
+                    comment = comment.substring(comment.indexOf("="),comment.length());
+                }
+                if(comment.contains(":") && comment.contains(",") ){
+                    for(String valueAndName : comment.split(",")){
+                        String[] valueAndNameArry = valueAndName.split(":");
+                        staticCellList.add(new StaticCell(valueAndNameArry[0],valueAndNameArry[1]));
+                    }
+                }
+            }
+        } catch(Exception e) {
+            System.err.print("设置静态属性列表 备注规则： eg 类型=A:优秀，B:良好");
+            System.err.println(field.getComment());
+        }
         if (strategyConfig.includeSuperEntityColumns(field.getName())) {
           // 跳过公共字段
           commonFieldList.add(field);

@@ -276,6 +276,8 @@ public abstract class AbstractTemplateEngine {
     objectMap.put("kotlin", globalConfig.isKotlin());
     objectMap.put("date", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
     objectMap.put("table", tableInfo);
+    /*设置静态属性 */
+    objectMap.put("staticCells", tableInfo.getStaticCells());
     objectMap.put("enableCache", globalConfig.isEnableCache());
     objectMap.put("baseResultMap", globalConfig.isBaseResultMap());
     objectMap.put("baseColumnList", globalConfig.isBaseColumnList());

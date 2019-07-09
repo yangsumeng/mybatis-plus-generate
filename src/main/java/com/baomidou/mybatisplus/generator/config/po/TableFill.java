@@ -17,14 +17,6 @@ package com.baomidou.mybatisplus.generator.config.po;
 
 import com.baomidou.mybatisplus.enums.FieldFill;
 
-/**
- * <p>
- * 字段填充
- * </p>
- *
- * @author hubin
- * @since 2017-06-26
- */
 public class TableFill {
 
     /**

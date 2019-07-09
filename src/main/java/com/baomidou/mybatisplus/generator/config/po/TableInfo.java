@@ -51,6 +51,8 @@ public class TableInfo {
     private String controllerName;
 
     private List<TableField> fields;
+
+    private List<StaticCell> staticCells;
     // 公共字段
     private List<TableField> commonFields;
     private List<String> importPackages = new ArrayList<>();
@@ -194,6 +196,14 @@ public class TableInfo {
 
     public void setVoName(String voName) {
         this.voName = voName;
+    }
+
+    public List<StaticCell> getStaticCells() {
+        return staticCells;
+    }
+
+    public void setStaticCells(List<StaticCell> staticCells) {
+        this.staticCells = staticCells;
     }
 
     public void setFields(List<TableField> fields) {
