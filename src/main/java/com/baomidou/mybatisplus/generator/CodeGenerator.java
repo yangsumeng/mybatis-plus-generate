@@ -27,12 +27,10 @@ import java.util.Map;
  * mapperPath：mapp.xml生成的路径 不设置默认是 ../resources/mapper
  */
 public class CodeGenerator {
-    //    private static String url = "jdbc:mysql://localhost:3306/qpi_ys";
-//    private static String userName = "root";
-//    private static  String password = "root";
-    private static String url = "jdbc:mysql://192.168.50.116:3306/cps";
+    private static String url = "jdbc:mysql://localhost:3306/qpi_ys";
     private static String userName = "root";
-    private static  String password = "ysten123";
+    private static  String password = "root";
+
     /**"D:\\generator";*/
     private static String outPutDir = "C:\\workspace\\cps\\cps-backend\\src\\main\\java\\";
     private static boolean fileOverride = true;

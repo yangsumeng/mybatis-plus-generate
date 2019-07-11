@@ -25,19 +25,17 @@ import java.util.List;
  * mapperPath：mapp.xml生成的路径 不设置默认是 ../resources/mapper
  */
 public class BackEndCodeGenerator {
-    //    private static String url = "jdbc:mysql://localhost:3306/qpi_ys";
-//    private static String userName = "root";
-//    private static  String password = "root";
-    private static String url = "jdbc:mysql://192.168.50.116:3306/cps";
+    private static String url = "jdbc:mysql://localhost:3306/qpi_ys";
     private static String userName = "root";
-    private static  String password = "ysten123";
+    private static  String password = "root";
+
     /**"D:\\generator";*/
-    private static String outPutDir = "D:\\generator";
-    ///private static String outPutDir = "C:\\workspace\\cps\\cps-backend\\src\\main\\java\\";
+   /// private static String outPutDir = "D:\\generator";
+    private static String outPutDir = "C:\\workspace\\CPS\\cps-backend\\src\\main\\java\\";
     private static boolean fileOverride = true;
-    private static String[] includeArr = {"cps_sys_user"};
+    private static String[] includeArr = {"cps_sys_strategy"};
     private static String tablePrefix = "cps_sys_";
-    private static String modelName = "system";
+    private static String modelName = "strategy";
     private static String logicDeleteFieldName  = "";
 //    private static Map<String, Object> map = new HashMap<>();
 //    static {
