@@ -93,10 +93,10 @@ public class BackEndCodeGenerator {
 		strategy.setRestControllerStyle(true);
         strategy.setEntityLombokModel(true);
 		strategy.setLogicDeleteFieldName(logicDeleteFieldName);
-        strategy.setSuperServiceClass("com.ysten.conts.cps.service.base.IBaseService");
-        strategy.setSuperServiceImplClass("com.ysten.conts.cps.service.base.impl.JpaBaseService");
-        strategy.setSuperRepositoryClass("com.ysten.conts.cps.repository.base.IJpaBaseRepository");
-        strategy.setSuperControllerClass("com.ysten.conts.cps.controller.base.BaseController");
+        strategy.setSuperServiceClass("com.***.***.cps.service.base.IBaseService");
+        strategy.setSuperServiceImplClass("com.***.***.cps.service.base.impl.JpaBaseService");
+        strategy.setSuperRepositoryClass("com.***.***.cps.repository.base.IJpaBaseRepository");
+        strategy.setSuperControllerClass("com.***.***.cps.controller.base.BaseController");
 		autoGenerator.setStrategy(strategy);
 
 		// 4. 包名策略配置
@@ -150,19 +150,7 @@ public class BackEndCodeGenerator {
 //        fileOutList.add(new FileOutConfig("/template/mapper.xml.vm") {
 //            @Override
 //            public String outputFile(TableInfo tableInfo) {
-//                return outPutDir + "\\com\\ysten\\conts\\cps\\repository\\" +modelName+"\\mapper\\"+ tableInfo.getOriginalEntityName()+ "Mapper.xml";
-//            }
-//        });
-//        fileOutList.add(new FileOutConfig("/template/vo.java.vm") {
-//            @Override
-//            public String outputFile(TableInfo tableInfo) {
-//                return outPutDir + "\\com\\ysten\\conts\\cps\\controller\\"+modelName+"\\vo\\" + tableInfo.getOriginalEntityName() + "ListResp.java";
-//            }
-//        });
-//        fileOutList.add(new FileOutConfig("/template/form.java.vm") {
-//            @Override
-//            public String outputFile(TableInfo tableInfo) {
-//                return outPutDir + "\\com\\ysten\\conts\\cps\\controller\\" +modelName+"\\form\\"+ tableInfo.getOriginalEntityName() + "Form.java";
+//                return outPutDir + "\\com\\***\\***\\***\\repository\\" +modelName+"\\mapper\\"+ tableInfo.getOriginalEntityName()+ "Mapper.xml";
 //            }
 //        });
 
