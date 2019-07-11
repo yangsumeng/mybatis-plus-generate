@@ -31,6 +31,7 @@ public class CodeGenerator {
     private static String userName = "root";
     private static  String password = "root";
 
+
     /**"D:\\generator";*/
     private static String outPutDir = "C:\\workspace\\cps\\cps-backend\\src\\main\\java\\";
     private static boolean fileOverride = true;
@@ -52,7 +53,7 @@ public class CodeGenerator {
     private static IdType type = IdType.AUTO;
     private static String mapperPath = null; //不设置默认是 ../resources/mapper
     private static String sngleName = ""; //单表生成替换名称 暂时无用
-    private static String parent = "com.ysten.conts.cps";
+    private static String parent = "com.***.***.***";
 
 	public static void main(String[] args) {
 
