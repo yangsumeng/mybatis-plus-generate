@@ -19,11 +19,11 @@
 package ${package.Controller};
 
 import com.google.common.collect.Lists;
-import com.ysten.conts.cps.aspect.OperatorLog;
-import com.ysten.conts.cps.bean.AuthUserInfo;
-import com.ysten.conts.cps.bean.WebResult;
-import com.ysten.conts.cps.common.utils.OrikaMapper;
-import com.ysten.conts.cps.utils.WebResultUtil;
+import com.***.***.***.aspect.OperatorLog;
+import com.***.***.***.bean.AuthUserInfo;
+import com.***.***.***.bean.WebResult;
+import com.***.***.***.common.utils.OrikaMapper;
+import com.***.***.***.utils.WebResultUtil;
 import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
