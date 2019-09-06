@@ -15,11 +15,13 @@
  */
 package com.baomidou.mybatisplus.generator.config.po;
 
-import java.util.Map;
-
 import com.baomidou.mybatisplus.generator.config.StrategyConfig;
 import com.baomidou.mybatisplus.generator.config.rules.DbColumnType;
 import com.baomidou.mybatisplus.toolkit.StringUtils;
+
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * <p>
@@ -30,9 +32,21 @@ import com.baomidou.mybatisplus.toolkit.StringUtils;
  * @since 2016-12-03
  */
 public class TableField {
-
+    public static Set baseFieldSet = new HashSet<String>();
+    static {
+        baseFieldSet.add("id");
+        baseFieldSet.add("state");
+        baseFieldSet.add("create_by");
+        baseFieldSet.add("update_by");
+        baseFieldSet.add("update_time");
+        baseFieldSet.add("create_time");
+    }
     private boolean convert;
     private boolean keyFlag;
+    /**
+     * 是否是基础字段 id state create_by  update_by update_time create_time
+     */
+    private boolean isBaseField;
     /**
      * 主键是否为自增类型
      */
@@ -108,6 +122,14 @@ public class TableField {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public boolean isBaseField() {
+        return isBaseField;
+    }
+
+    public void setBaseField(boolean baseField) {
+        isBaseField = baseField;
     }
 
     public String getPropertyName() {

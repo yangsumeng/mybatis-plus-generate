@@ -1,0 +1,15 @@
+-- $!{table.comment} 接口路径 * @author ${author} * @since ${date}
+
+-- -----------------------------生成按钮权限
+INSERT INTO ${cfg.tablePrefix}sys_menu
+(`name`, `parent_id`, `button_type`, `level`, `title`, `type`, `icon`, `sort_order`, `status`, `component`, `path`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`)
+VALUES ('${table.entityPath}-manage', '20', '', '2', '${table.comment}', '0', 'ios-list-box', '100', '0', '${cfg.modelName}/${table.entityPath}Manage', '/${table.entityPath}', '${table.comment}', NULL, NULL, '1', now(), '0');
+
+INSERT INTO ${cfg.tablePrefix}sys_menu ( `name`, `parent_id`, `button_type`, `level`, `title`, `type`, `icon`, `sort_order`, `status`, `component`, `path`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`)
+select NULL, id, 'add', '3', '新增', '1', '', '1.00', '0', '', '/${table.entityPath}', '新增', '1',  NOW(), '1', null, '0' from ${cfg.tablePrefix}sys_menu where title='${table.comment}' limit 1;
+
+INSERT INTO ${cfg.tablePrefix}sys_menu (`name`, `parent_id`, `button_type`, `level`, `title`, `type`, `icon`, `sort_order`, `status`, `component`, `path`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`)
+select NULL, id, 'delete', '3', '删除', '1', '', '2.00', '0', '', '/${table.entityPath}', '删除', '1',  NOW(), '1', null, '0' from ${cfg.tablePrefix}sys_menu where title='${table.comment}' limit 1;
+
+INSERT INTO ${cfg.tablePrefix}sys_menu (`name`, `parent_id`, `button_type`, `level`, `title`, `type`, `icon`, `sort_order`, `status`, `component`, `path`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`)
+select NULL, id, 'edit', '3', '修改', '1', NULL, '3.00', '0', NULL, '/${table.entityPath}', '修改', '1', NOW(), '1', null, '0' from ${cfg.tablePrefix}sys_menu where title='${table.comment}' limit 1;

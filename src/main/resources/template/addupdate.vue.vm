@@ -1,0 +1,145 @@
+<!-- $!{table.comment} 接口路径 * @author ${author} * @since ${date} -->
+#foreach($field in ${table.fields})
+    #if(${field.keyFlag})
+        #set($pkField=${field})
+    #elseif(${logicDeleteFieldName}==${field.name})
+        #set($logicDeleteField=${field})
+    #elseif("create_by"==${field.name})
+        #set($creatorField=${field})
+    #elseif("update_by"==${field.name})
+        #set($operatorField=${field})
+    #elseif("update_time"==${field.name})
+        #set($operateDateField=${field})
+    #elseif("create_time"==${field.name})
+        #set($createDateField=${field})
+    #elseif(${field.name.endsWith("_id")})
+        #set($idField=${field})
+    #end
+#end
+<!-- =============================HTML=================================== -->
+<template>
+  <Modal :title="'edit'==dealType ? '修改':'新增'" v-model="addAndUpdate${table.originalEntityName}Model" :loading="modelLoading"
+         :closable="false" :mask-closable='false' :width="800"
+         :styles="{top: '10px'}">
+    <Form ref="${table.entityPath}Ref" :model="${table.entityPath}" :rules="${table.entityPath}Validate" style="margin-top:10px;" inline
+          :label-width="120">
+#foreach($field in ${table.fields})
+#if(${field.keyFlag})
+#elseif(${field.baseField})
+##基础字段忽略
+#else
+        <FormItem label="${field.comment}:" prop="${field.propertyName}">
+            <Input type="text" v-model="${table.entityPath}.${field.propertyName}" placeholder="${field.comment}" style="width: 500px" />
+        </FormItem>
+#end
+#end
+        </Form>
+    <div slot="footer">
+      <Button type="text" @click="closeModal">取消</Button>
+      <Button type="primary" @click="doSubmit">确定</Button>
+    </div>
+  </Modal>
+</template>
+<!-- ==============================JS================================== -->
+<script>
+    import {add${table.originalEntityName},edit${table.originalEntityName}} from './${table.entityPath}';
+    import util from "@libs/util.js";
+    import {getStore} from "@utils/storage.js";
+    export default {
+        name: "addAndUpdate${table.originalEntityName}",
+        components: {},
+        props: [],
+        data() {
+            return {
+                dealType: 'add',
+                addAndUpdate${table.originalEntityName}Model: false,
+                modelLoading: true,
+                ${table.entityPath}:{
+#foreach($field in ${table.fields})
+#if(${field.keyFlag})
+                    ${field.propertyName}:null,
+#elseif(${field.baseField})
+##基础字段忽略
+#elseif(${field.propertyType.equals("String")})
+                    ${field.propertyName}:"",
+#else
+                    ${field.propertyName}:null,
+#end
+#end
+                },
+                ${table.entityPath}Validate:{
+#foreach($field in ${table.fields})
+#if(${field.keyFlag})
+#elseif(${field.baseField})
+##基础字段忽略
+#elseif(${field.propertyType.equals("String")})
+                    ${field.propertyName}:[{type: 'string',required: true, message: "必选", trigger: "blur"}],
+#else
+                    ${field.propertyName}:[{type: 'string',required: false, message: "必选", trigger: "blur"}],
+#end
+#end
+                }
+            };
+        },
+        methods: {
+            init() {},
+            doModelAddInit() {
+                #[[this.$refs.]]#${table.entityPath}Ref.resetFields();
+                this.addAndUpdate${table.originalEntityName}Model = true;
+                this.dealType = 'add';
+                this.modelLoading = false;
+            },
+            doModelEditInit(row) {
+                let self = this;
+                self.dealType = 'edit';
+                #[[self.$refs.]]#${table.entityPath}Ref.resetFields();
+                self.addAndUpdate${table.originalEntityName}Model = true;
+                self.${table.entityPath} = util.clone(row);
+                self.modelLoading = false;
+            },
+            closeModal() {
+                this.addAndUpdate${table.originalEntityName}Model = false;
+            },
+            doSubmit() {
+                this.save${table.originalEntityName}();
+            },
+            save${table.originalEntityName}() {
+                let self = this;
+                #[[self.$refs.]]#${table.entityPath}Ref.validate((valid) => {
+                  if (valid) {
+                    let serviceFunction = add${table.originalEntityName}; //默认新增
+                    if ('edit' == self.dealType) {
+                      serviceFunction = edit${table.originalEntityName};
+                    }
+                    serviceFunction(self.${table.entityPath}, (res) => {
+                      if (res.success === true) {
+                        this.$Message.success("成功");
+                        self.closeModal(); //关闭当前页面
+                        self.$emit('doParentQuery');//调用父类的方法
+                      } else {
+                        if (res.code === 700) {
+                          self.$Message.error("新增失败");
+                        } else {
+                          self.closeModal(); //关闭当前页面
+                          self.$Message.error("失败");
+                        }
+                      }
+                    })
+                  }
+                })
+              }
+        },
+        created() {},
+        mounted() {
+            this.init();
+        },
+        destroyed() {},
+        computed: {},
+        watch: {},
+        filters: {},
+    }
+</script>
+<!-- ==============================CSS================================== -->
+<style lang="less" scoped>
+    @import "../../styles/common/common.less";
+</style>

@@ -1,0 +1,47 @@
+/*** $!{table.comment} 接口路径 * @author ${author} * @since ${date} */
+
+import {getRequest, postRequest, putRequest, deleteRequest} from '@/utils/api';
+
+/*
+*  $!{table.comment}${table.name} -- 新增
+*  ${author} - ${date}
+*/
+export function add${table.originalEntityName}(params, cb) {
+  postRequest("/${table.entityPath}", params,'application/json;charset=UTF-8').then((response) => {
+    let data = response;
+    cb(data);
+  })
+}
+
+/*
+*  $!{table.comment}${table.name} -- 删除
+*  ${author} - ${date}
+*/
+export function delete${table.originalEntityName}(params, cb) {
+  deleteRequest("/${table.entityPath}", params).then((response) => {
+    let data = response;
+    cb(data);
+  })
+}
+
+/*
+*  $!{table.comment}${table.name} -- 修改
+*  ${author} - ${date}
+*/
+export function edit${table.originalEntityName}(params, cb) {
+  putRequest("/${table.entityPath}", params ,'application/json;charset=UTF-8').then((response) => {
+    let data = response;
+    cb(data);
+  })
+}
+
+/*
+*  $!{table.comment}${table.name} -- 分页查询
+*  ${author} - ${date}
+*/
+export  function get${table.originalEntityName}Page(params,cb) {
+  getRequest("/${table.entityPath}/page",params).then((response) => {
+      let data = response.result;
+      cb(data);
+    })
+}

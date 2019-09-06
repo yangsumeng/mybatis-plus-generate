@@ -1,0 +1,253 @@
+<!-- $!{table.comment} 接口路径 * @author ${author} * @since ${date} -->
+#foreach($field in ${table.fields})
+    #if(${field.keyFlag})
+        #set($pkField=${field})
+    #elseif(${logicDeleteFieldName}==${field.name})
+        #set($logicDeleteField=${field})
+    #elseif("create_by"==${field.name})
+        #set($creatorField=${field})
+    #elseif("update_by"==${field.name})
+        #set($operatorField=${field})
+    #elseif("update_time"==${field.name})
+        #set($operateDateField=${field})
+    #elseif("create_time"==${field.name})
+        #set($createDateField=${field})
+    #elseif(${field.name.endsWith("_id")})
+        #set($idField=${field})
+    #end
+#end
+<!-- =============================HTML=================================== -->
+<template>
+    <div class="search">
+        <Card>
+            <Row>
+                <Form ref="searchForm" :model="searchForm" inline class="search-form">
+#foreach($field in ${table.fields})
+#if(${field.name.endsWith("_name")} || ${field.name.endsWith("_code")})
+                    <Form-item label="${field.comment}:" prop="${field.propertyName}" :label-width="80">
+                        <Input type="text" v-model="searchForm.${field.propertyName}" placeholder="${field.comment}" style="width: 130px" />
+                    </Form-item>
+#end
+#end
+                    <Form-item>
+                        <Button @click="pageSearch" type="primary">搜索</Button>
+                        <Button @click="handleReset('searchForm')" type="info" ghost>重置</Button>
+                    </Form-item>
+                </Form>
+            </Row>
+            <Row class="operation">
+                <Button v-has="'add'" @click="doAdd" type="primary" icon="md-add">新增</Button>
+                <Button v-has="'delete'" @click="doRemoveAll" type="dashed" icon="ios-trash">批量删除</Button>
+            </Row>
+            <Row>
+                <Alert show-icon>
+                    已选择 <span class="select-count">{{selectCount}}</span> 项
+                    <a class="select-clear" @click="clearSelectAll">清空</a>
+                </Alert>
+            </Row>
+            <!-- ==table== -->
+            <Row class="margin-top-10 searchable-table-con1 operation">
+                <Table highlight-row size="small" :loading="loading" :columns="columns" :data="data" sortable="custom"
+                       height="420" @on-sort-change="changeSort" @on-selection-change="showSelect" ref="table"></Table>
+            </Row>
+            <!-- ==page== -->
+            <Row type="flex" justify="end" class="code-row-bg page">
+                <Page :current="this.searchForm.page" :total="total" :page-size="this.searchForm.size"
+                      @on-change="pageChange" @on-page-size-change="pageSizeChange" :page-size-opts="[10,20,50,100]"
+                      size="small" show-total show-elevator show-sizer></Page>
+            </Row>
+        </Card>
+        <!-- 新增修改 -->
+        <addAndUpdate${table.originalEntityName} ref="addAndUpdate${table.originalEntityName}Ref" @doParentQuery="pageSearch"  />
+    </div>
+</template>
+<!-- ==============================JS================================== -->
+<script>
+    import {get${table.originalEntityName}Page,delete${table.originalEntityName}} from './${table.entityPath}';
+    import addAndUpdate${table.originalEntityName} from './addAndUpdate${table.originalEntityName}.vue';
+    import util from "@libs/util.js";
+    import {getStore,setStore} from "@utils/storage.js";
+    export default {
+        name: "${table.entityPath}-manage",
+        components: {addAndUpdate${table.originalEntityName}},
+        data() {
+            return {
+                searchForm: {
+#foreach($field in ${table.fields})
+#if(${field.name.endsWith("_name")} || ${field.name.endsWith("_code")})
+                    ${field.propertyName}: "",
+#end
+#end
+                    size: 10,
+                    page: 1
+                },
+                loading: false,
+                total: 0,
+                selectCount: 0,
+                columns: [
+                    {type: 'selection', width: 50, align: 'center'}
+                #foreach($field in ${table.fields})
+                    #if(${field.keyFlag})
+                    ,{title: "ID", key: "id", align: "center", width: 100}
+                    #else
+                    ,{title: "${field.comment}", key: "${field.propertyName}", align: "center", minWidth : 100}
+                    #end
+                #end
+                    ,{
+                        title: "操作",
+                        key: "action",
+                        align: "center",
+                        minWidth: 200,
+                        fixed: 'right',
+                        render: (h, params) => {
+                            return h("div", [
+                                h("Button",
+                                        {
+                                            props: {type: "info", size: "small"},
+                                            style: {
+                                                marginRight: "5px",
+                                                display: this.permTypes.includes("edit") ? "inline-block" : "none"
+                                            },
+                                            on: {
+                                                click: () => {
+                                                    this.doEdit(params.row);
+                                                }
+                                            }
+                                        }, "编辑"),
+                                h("Button",
+                                    {
+                                        props: {type: "error", size: "small"},
+                                        style: {
+                                            marginRight: "5px",
+                                            display: this.permTypes.includes("delete") ? "inline-block" : "none"
+                                        },
+                                        on: {
+                                            click: () => {
+                                                this.doRemove(params.row);
+                                            }
+                                        }
+                                    }, "删除")
+                            ]);
+                        }
+                    }
+                ],
+                data: [],
+                permTypes: [] //按钮权限
+            };
+        },
+        methods: {
+            init() {
+                this.handleSearch();
+            },
+            getDictionary() {
+                //获取字典项
+                let data = JSON.parse(getStore('dictionary'));
+            },
+            showSelect(e) {
+                this.selectList = e;
+                this.selectCount = e.length;
+            },
+            clearSelectAll() {
+                this.$refs.table.selectAll(false);
+            },
+            doAdd(){
+                this.$refs.addAndUpdate${table.originalEntityName}Ref.doModelAddInit(); //触发子页面的初始化
+            },
+            doRemove(row){
+                let self = this;
+                #[[self.$Modal.confirm({]]#
+                    title: "确认删除",
+                    content: "您确认要删除这条数据么?",
+                    onOk: () => {
+                        let ids = ""+row.id;
+                        delete${table.originalEntityName}({ids: ids},res => {
+                        if (res.success === true) {
+                            self.$Message.success("删除成功");
+                            self.handleSearch();
+                        }
+                    })
+                    }
+                });
+            },
+            doRemoveAll(){
+                let self = this;
+                if (self.selectCount <= 0) {
+                  self.$Message.warning("您还未选择要删除的数据");
+                  return;
+                }
+                let ids = "";
+                self.selectList.forEach(function (e) {
+                  ids += e.id + ",";
+                });
+                ids = ids.substring(0, ids.length - 1);
+                #[[self.$Modal.confirm({]]#
+                  title: "确认删除",
+                  content: "您确认要删除所选的 " + this.selectCount + " 条数据?",
+                  onOk: () => {
+                    delete${table.originalEntityName}({ids: ids}, res => {
+                      if (res.success === true) {
+                        self.$Message.success("删除成功");
+                        self.handleSearch();
+                      }
+                    })
+                  }
+                });
+            },
+            doEdit(row){
+                #[[this.$refs.addAndUpdate]]#${table.originalEntityName}Ref.doModelEditInit(row); //触发子页面的初始化
+            },
+            pageSearch() {
+                this.searchForm.page = 1;
+                this.handleSearch();
+            },
+            handleSearch(page = 1) {
+                let self = this;
+                this.loading = true;
+                var requestForm = util.clone(this.searchForm);
+                requestForm.page = page - 1;
+                get${table.originalEntityName}Page(requestForm, (res) => {
+                    self.data = res.data.content;
+                    self.total = res.data.totalElements;
+                    self.loading = false;
+                })
+            },
+            handleReset(name) {
+                #[[this.$refs[name].resetFields();]]#
+                this.selectCount = 0;
+                this.handleSearch();
+            },
+            pageChange(page) {
+                this.searchForm.page = page;
+                this.handleSearch(page);
+                this.clearSelectAll();
+            },
+            pageSizeChange(size) {
+                this.searchForm.size = size;
+                this.handleSearch();
+            },
+            changeSort(e) {
+                this.searchForm.sort = e.key;
+                this.searchForm.order = e.order;
+                if (e.order === "normal") {
+                    this.searchForm.order = "";
+                }
+                this.init();
+            },
+        },
+        created() {},
+        mounted() {
+            #[[let permTypes = this.$route.meta.permTypes;]]#
+            if (permTypes) {
+                this.permTypes = permTypes;
+            }
+            this.init();
+        },
+        destroyed() {},
+        computed: {},
+        watch:{}
+    }
+</script>
+<!-- ==============================CSS================================== -->
+<style lang="less" scoped>
+    @import "../../styles/common/common.less";
+</style>

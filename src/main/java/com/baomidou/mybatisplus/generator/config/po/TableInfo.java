@@ -15,15 +15,11 @@
  */
 package com.baomidou.mybatisplus.generator.config.po;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import com.baomidou.mybatisplus.generator.config.StrategyConfig;
 import com.baomidou.mybatisplus.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.toolkit.StringUtils;
+
+import java.util.*;
 
 /**
  * <p>
@@ -38,7 +34,7 @@ public class TableInfo {
     private boolean convert;
     private String name;
     private String comment;
-
+    /**sys_user SysUser*/
     private String originalEntityName;
     private String formName;
     private String voName;
@@ -102,6 +98,12 @@ public class TableInfo {
         this.comment = comment;
     }
 
+    /**
+     *@descption  表 sys_user  originalEntityName是 SysUser  这里修改为sysUser
+     *      用于拼接  ${table.entityPath}Form
+     *@author yangsm
+     *@date  2019/9/5
+     */
     public String getEntityPath() {
         StringBuilder ep = new StringBuilder();
         ep.append(originalEntityName.substring(0, 1).toLowerCase());
@@ -212,6 +214,9 @@ public class TableInfo {
             // 收集导入包信息
             Set<String> pkgSet = new HashSet<>();
             for (TableField field : fields) {
+                if(TableField.baseFieldSet.contains(field.getName())){
+                    field.setBaseField(true);
+                }
                 if (null != field.getColumnType() && null != field.getColumnType().getPkg()) {
                     pkgSet.add(field.getColumnType().getPkg());
                 }
