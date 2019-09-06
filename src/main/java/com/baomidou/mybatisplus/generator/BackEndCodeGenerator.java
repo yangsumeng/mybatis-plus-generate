@@ -25,16 +25,16 @@ import java.util.List;
  * mapperPath：mapp.xml生成的路径 不设置默认是 ../resources/mapper
  */
 public class BackEndCodeGenerator {
-    private static String url = "jdbc:mysql://localhost:3306/qpi_ys";
+    private static String url = "jdbc:mysql://192.168.50.116:3306/cos_youku";
     private static String userName = "root";
-    private static  String password = "root";
+    private static  String password = "ysten123";
 
     /**"D:\\generator";*/
    /// private static String outPutDir = "D:\\generator";
-    private static String outPutDir = "C:\\workspace\\CPS\\cps-backend\\src\\main\\java\\";
+    private static String outPutDir = "C:\\data";
     private static boolean fileOverride = true;
-    private static String[] includeArr = {"cps_sys_strategy"};
-    private static String tablePrefix = "cps_sys_";
+    private static String[] includeArr = {"cos_category","cos_category_copy"};
+    private static String tablePrefix = "cos_";
     private static String modelName = "strategy";
     private static String logicDeleteFieldName  = "";
 //    private static Map<String, Object> map = new HashMap<>();
@@ -51,7 +51,7 @@ public class BackEndCodeGenerator {
     private static IdType type = IdType.AUTO;
     private static String mapperPath = null; //不设置默认是 ../resources/mapper
     private static String sngleName = ""; //单表生成替换名称 暂时无用
-    private static String parent = "com.***.***.***";
+    private static String parent = "com.test";
 
 	public static void main(String[] args) {
 
@@ -93,10 +93,10 @@ public class BackEndCodeGenerator {
 		strategy.setRestControllerStyle(true);
         strategy.setEntityLombokModel(true);
 		strategy.setLogicDeleteFieldName(logicDeleteFieldName);
-        strategy.setSuperServiceClass("com.***.***.cps.service.base.IBaseService");
-        strategy.setSuperServiceImplClass("com.***.***.cps.service.base.impl.JpaBaseService");
-        strategy.setSuperRepositoryClass("com.***.***.cps.repository.base.IJpaBaseRepository");
-        strategy.setSuperControllerClass("com.***.***.cps.controller.base.BaseController");
+        strategy.setSuperServiceClass("com.test.cps.service.base.IBaseService");
+        strategy.setSuperServiceImplClass("com.test.cps.service.base.impl.JpaBaseService");
+        strategy.setSuperRepositoryClass("com.test.cps.repository.base.IJpaBaseRepository");
+        strategy.setSuperControllerClass("com.test.cps.controller.base.BaseController");
 		autoGenerator.setStrategy(strategy);
 
 		// 4. 包名策略配置
