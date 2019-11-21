@@ -27,7 +27,7 @@ import java.util.*;
 public class IMSCodeGenerator {
     private static String url = "jdbc:mysql://192.168.50.146:3306/ims_vss";
     private static String userName = "root";
-    private static  String password = "ysten123";
+    private static  String password = "";
     private static  String version = "IMS_ELEMENT";
     private static String outPutDir = "D:\\generator";
     private static boolean fileOverride = true;
