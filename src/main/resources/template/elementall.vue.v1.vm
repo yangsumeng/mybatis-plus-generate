@@ -1,0 +1,352 @@
+<!-- $!{table.comment} 接口路径 * @author ${author} * @since ${date} -->
+#foreach($field in ${table.fields})
+    #if(${field.keyFlag})
+        #set($pkField=${field})
+    #elseif(${logicDeleteFieldName}==${field.name})
+        #set($logicDeleteField=${field})
+    #elseif("create_by"==${field.name})
+        #set($creatorField=${field})
+    #elseif("update_by"==${field.name})
+        #set($operatorField=${field})
+    #elseif("update_time"==${field.name})
+        #set($operateDateField=${field})
+    #elseif("create_time"==${field.name})
+        #set($createDateField=${field})
+    #elseif(${field.name.endsWith("_id")})
+        #set($idField=${field})
+    #elseif(${field.name} == ${table.pageName})
+        #set($nameField=${field})
+    #elseif(${field.name} == ${table.pageId})
+        #set($deleteField=${field})
+    #end
+#end
+<template>
+    <div v-loading="listLoading" class="app-container">
+<!--    ====================================搜索**开始====================================-->
+        <el-form ref="form" :inline="true" :model="form">
+#foreach($field in ${table.fields})
+    #if(${field.pageSearch})
+        #if(${field.pageType} == "text")
+        #elseif(${field.pageType} == "select")
+            <el-form-item label="${field.comment}">
+                <el-select v-model="form.${field.propertyName}" placeholder="${field.comment}" style="width: 100%" clearable>
+                    <el-option v-for="item in ${field.propertyName}Arr" :key="item.value" :label="item.text" :value="item.value"/>
+                </el-select>
+            </el-form-item>
+        #elseif(${field.pageType} == "number")
+        #elseif(${field.pageType} == "date")
+            <el-form-item label="${field.comment}" prop="${field.propertyName}">
+                <el-date-picker v-model="temp.${field.propertyName}" type="datetime" placeholder="${field.comment}" style="width: 100%"/>
+            </el-form-item>
+        #else
+            <el-form-item>
+                <el-input v-model="form.${field.propertyName}" placeholder="${field.comment}" />
+            </el-form-item>
+        #end
+    #end
+#end
+#if(${table.pageDateQuery})
+            <el-form-item>
+                <el-date-picker v-model="form.queryTime" type="datetimerange" clearable :picker-options="quickPickOptions" start-placeholder="创建时间范围" end-placeholder="创建时间范围" style="width: 100%"/>
+            </el-form-item>
+#end
+            <el-form-item>
+                <el-button icon="el-icon-search" @click="handleFilter">搜索</el-button>
+                <el-button type="primary" icon="el-icon-plus" @click="handleCreate">新增</el-button>
+            </el-form-item>
+        </el-form>
+<!--    ====================================搜索**结束====================================-->
+
+<!--    ====================================表格**开始====================================-->
+        <won-table row-key="${pkField.propertyName}" v-bind="wonTableProps" v-on="wonTableListeners">
+            <won-table-column type="index" width="50" />
+        #foreach($field in ${table.fields})
+            #if(${field.keyFlag})
+            #elseif(${field.baseField})
+            #elseif(${field.ignore})
+            #elseif(${field.pageType} == "select")
+            <won-table-column prop="${field.propertyName}" label="${field.comment}" >
+                <filter-tag slot-scope="{ row }" :tvs="${field.propertyName}Arr" :value="row.${field.propertyName}"/>
+            </won-table-column>
+            #else
+            <won-table-column prop="${field.propertyName}" label="${field.comment}" />
+            #end
+        #end
+            <won-table-column width="80" fixed="right" label="操作" align="center">
+                <template slot-scope="{ row }">
+                    <el-dropdown trigger="click">
+                        <el-button class="nopadding fz20" icon="el-icon-more" type="text"/>
+                        <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item>
+                                <div @click="handleDetail(row)">查看</div>
+                            </el-dropdown-item>
+                            <el-dropdown-item>
+                                <div @click="handleUpdate(row)">编辑</div>
+                            </el-dropdown-item>
+                            <el-dropdown-item>
+                                <div @click="handleRemove(row)">删除</div>
+                            </el-dropdown-item>
+                        </el-dropdown-menu>
+                    </el-dropdown>
+                </template>
+            </won-table-column>
+        </won-table>
+        <won-pagination v-bind="wonPaginationProps" v-on="wonPaginationListeners" />
+<!--    ====================================表格**结束====================================-->
+
+<!--    ====================================增改**开始====================================-->
+        <el-dialog :title="dialogStatus==='create'?'添加':'修改'" :visible.sync="dialogFormVisible" width="600px" :close-on-click-modal="false">
+            <div>
+                <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="100px">
+#foreach($field in ${table.fields})
+#if(${field.keyFlag})
+#elseif(${field.baseField})
+#elseif(${field.ignore})
+#elseif(${field.pageType} == "select")
+                    <el-form-item label="${field.comment}" prop="${field.propertyName}">
+                        <el-select v-model="temp.${field.propertyName}" placeholder="${field.comment}" style="width: 100%">
+                            <el-option v-for="item in ${field.propertyName}Arr" :key="item.value" :label="item.text" :value="item.value"/>
+                        </el-select>
+                    </el-form-item>
+#elseif(${field.pageType} == "date")
+                    <el-form-item label="${field.comment}" prop="${field.propertyName}">
+                        <el-date-picker v-model="temp.${field.propertyName}" type="datetime" placeholder="${field.comment}" style="width: 100%"/>
+                    </el-form-item>
+#elseif(${field.pageType} == "text")
+                    <el-form-item label="${field.comment}" prop="${field.propertyName}">
+                        <el-input v-model="temp.${field.propertyName}" placeholder="${field.comment}" :autosize="{ minRows: 2, maxRows: 4}" type="textarea"/>
+                    </el-form-item>
+#elseif(${field.pageType} == "number")
+                    <el-form-item label="${field.comment}" prop="${field.propertyName}">
+                        <el-input v-model.number="temp.${field.propertyName}" type="number" placeholder="${field.comment}" />
+                    </el-form-item>
+#else
+                    <el-form-item label="${field.comment}" prop="${field.propertyName}">
+                        <el-input v-model="temp.${field.propertyName}" placeholder="${field.comment}" />
+                    </el-form-item>
+#end
+#end
+                </el-form>
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click="dialogFormVisible = false">
+                        取消
+                    </el-button>
+                    <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
+                        确定
+                    </el-button>
+                </div>
+            </div>
+        </el-dialog>
+<!--    ====================================增改**结束====================================-->
+
+<!--    ====================================查看**开始====================================-->
+        <el-dialog title="查看" :visible.sync="dialogDetailVisible" width="600px" top="5vh">
+            <el-form :model="temp" class="table-expand-form" label-position="left" inline>
+#foreach($field in ${table.fields})
+#if(${field.keyFlag})
+#elseif(${field.baseField})##基础字段忽略
+#elseif(${field.ignore})
+#elseif(${field.pageType} == "text")
+                <el-form-item label="${field.comment}" style="width: 100%">
+                    <span>{{ temp.${field.propertyName} }}</span>
+                </el-form-item>
+#elseif(${field.pageType} == "select")
+                <el-form-item label="${field.comment}" style="width: 50%">
+                    <span>{{ doFormatArr(temp.${field.propertyName},${field.propertyName}Arr) }}</span>
+                </el-form-item>
+#else
+                <el-form-item label="${field.comment}" style="width: 50%">
+                    <span>{{ temp.${field.propertyName} }}</span>
+                </el-form-item>
+#end
+#end
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogDetailVisible = false">关闭</el-button>
+            </div>
+        </el-dialog>
+<!--    ====================================查看**结束====================================-->
+    </div>
+</template>
+
+<script>
+    import {} from '@/utils/enums';
+    import { deepClone } from '@/utils';
+    import pageTable from '@/components/PageTable/mixin';
+    import { mapGetters } from 'vuex'
+#if(${table.pageDateQuery})
+    import quickPickOptions from '@/views/_dateconfig';
+#end
+    export default {
+        name: "${table.entityPath}",
+        mixins: [pageTable],
+        components: {},
+        data() {
+            return {
+                form: {
+#foreach($field in ${table.fields})
+#if(${field.pageSearch})
+    #if(${field.pageType} == "select")
+                    ${field.propertyName}: "",
+    #elseif(${field.pageType} == "number")
+                    ${field.propertyName}: null,
+    #else
+                    ${field.propertyName}: "",
+    #end
+#end
+#end
+                },
+                rules: {
+                #foreach($field in ${table.fields})
+                    #if(${field.keyFlag})
+                    #elseif(${field.baseField})
+                    #else
+                        ${field.propertyName}: [{ required: true, message: '${field.comment}不能为空', trigger: 'blur' }],
+                    #end
+                #end
+                },
+                pageTable: {
+                    url: '${table.pageUrl}/page',
+                    fetchCondition: {}
+                },
+                wonTableProps: {
+                    defaultSort: {
+                        prop: 'crtTime', order: 'descending'
+                    }
+                },
+                listLoading: true,
+                temp: {},
+                dialogFormVisible: false,
+                dialogDetailVisible: false,
+                dialogStatus: '',
+#foreach($field in ${table.fields})
+    #if(${field.pageType} == "select")
+        #if(${field.fieldCells.size()} > 0)
+                ${field.propertyName}Arr:[
+            #foreach($cell in ${field.fieldCells})
+                    { text: '${cell.name}', value: '${cell.value}', tag: '${cell.tag}' },
+            #end
+                ],
+        #else
+                ${field.propertyName}Arr:[],
+        #end
+    #end
+#end
+            };
+        },
+        mounted() {
+            this.listLoading = false;
+        },
+        created() {
+#if(${table.pageDateQuery})
+            this.quickPickOptions = quickPickOptions;
+#end
+            //this.auditStatusArr = enum_auditStatus;
+            //this.fetchDictList('CP_CODE',this.cpcodeArr);
+        },
+        computed: {
+            ...mapGetters(['idType', 'vendorKey', 'vendorName'])
+        },
+        methods: {
+            handleCreate() {
+                this.resetTemp();
+                this.dialogStatus = 'create';
+                this.dialogFormVisible = true;
+                this.$nextTick(() => {
+                    this.$refs['dataForm'].clearValidate();
+                });
+            },
+            handleDetail(row) {
+                this.$reqGet(`${table.pageUrl}/#[[${row.]]#${deleteField.propertyName}#[[}]]#`).then(res => {
+                    this.temp = deepClone(res.data)
+                    this.dialogFormVisible = true
+                }).catch(err => {
+                    console.log(err)
+                    this.temp = deepClone(row)
+                    this.dialogFormVisible = true
+                })
+            },
+            handleUpdate(row) {
+                this.temp = deepClone(row);
+                this.dialogStatus = 'update';
+                this.dialogFormVisible = true;
+                this.$nextTick(() => {
+                    this.$refs['dataForm'].clearValidate();
+                });
+            },
+            handleRemove(row) {
+                this.confirm({
+                    row,
+                    prefix: '删除',
+                    label: '${nameField.propertyName}',
+                    beforeClose() {
+                        return this.$reqDel(`${table.pageUrl}/#[[${row.]]#${deleteField.propertyName}#[[}]]#`).then(() => {
+                            this.hasModified = true;
+                        });
+                    }
+                });
+            },
+            handleFilter() {
+                this.pageTable.fetchCondition = Object.assign(this.pageTable.fetchCondition, this.form);
+#if(${table.pageDateQuery})
+                this.parseDate('queryTime', 'crtTimeStart', 'crtTimeEnd');
+#end
+                this.fetchTableData();
+            },
+            resetTemp(row) {
+                this.temp = {};
+            },
+            createData() {
+                #[[this.$refs['dataForm'].]]#validate((valid) => {
+                    if (valid) {
+                        this.$reqPost(`${table.pageUrl}`,this.temp).then(res => {
+                            if (res.status == 200) {
+                                this.dialogFormVisible = false;
+                                this.handleFilter();
+                                this.$notify({title: '成功', message: '更新成功', type: 'success', duration: 2000});
+                            } else {
+                                this.$notify({title: '失败', message: res.message, type: 'error', duration: 2000});
+                            }
+                        })
+                    }
+                });
+            },
+            updateData() {
+                #[[this.$refs['dataForm'].]]#validate((valid) => {
+                    if (valid) {
+                        this.$reqPut(`${table.pageUrl}`,this.temp).then(res => {
+                            if (res.status == 200) {
+                                this.dialogFormVisible = false;
+                                this.handleFilter();
+                                this.$notify({title: '成功', message: '更新成功', type: 'success', duration: 2000});
+                            } else {
+                                this.$notify({title: '失败', message: res.message, type: 'error', duration: 2000});
+                            }
+                        })
+                    }
+                });
+            },
+            handleDetail(row) {
+                this.temp = deepClone(row);
+                this.dialogDetailVisible = true
+                // return this.$reqGet(`${table.pageUrl}/#[[${row.]]#${pkField.propertyName}#[[}]]#`).then(() => {
+                //     this.hasModified = true;
+                // });
+            },
+            doFormatArr(val,arr) {
+                return (_.find(arr, (item) => val == item.value) || { text: '' }).text;
+            }
+        },
+    }
+</script>
+
+<style lang="scss" scoped>
+    /deep/ .el-dialog__body {
+        padding: 10px 20px 25px 20px;
+        border-top: 1px solid rgb(224,230,237);
+        border-bottom: 1px solid rgb(224,230,237);
+    }
+    /deep/ div.el-col{
+        margin-left: 33px;
+    }
+</style>

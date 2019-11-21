@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * 模板引擎抽象类
@@ -50,12 +51,17 @@ public abstract class AbstractTemplateEngine {
     this.configBuilder = configBuilder;
     return this;
   }
-
-  /** 输出 java xml 文件 */
   public AbstractTemplateEngine batchOutput() {
+       return this.batchOutput(null);
+  }
+  /** 输出 java xml 文件 */
+  public AbstractTemplateEngine batchOutput(Function<TableInfo, TableInfo> dealTableFunction) {
     try {
       List<TableInfo> tableInfoList = this.getConfigBuilder().getTableInfoList();
       for (TableInfo tableInfo : tableInfoList) {
+        if(null != dealTableFunction){
+          tableInfo = dealTableFunction.apply(tableInfo);
+        }
         Map<String, Object> objectMap = this.getObjectMap(tableInfo);
         Map<String, String> pathInfo = this.getConfigBuilder().getPathInfo();
         TemplateConfig template = this.getConfigBuilder().getTemplate();
@@ -256,6 +262,7 @@ public abstract class AbstractTemplateEngine {
    *
    * @param tableInfo 表信息对象
    * @return
+   * TODO 设置参数关键位置
    */
   public Map<String, Object> getObjectMap(TableInfo tableInfo) {
     Map<String, Object> objectMap = new HashMap<>();
@@ -277,7 +284,7 @@ public abstract class AbstractTemplateEngine {
     objectMap.put("date", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
     objectMap.put("table", tableInfo);
     /*设置静态属性 */
-    objectMap.put("staticCells", tableInfo.getStaticCells());
+//    objectMap.put("staticCells", tableInfo.getStaticCells());
     objectMap.put("enableCache", globalConfig.isEnableCache());
     objectMap.put("baseResultMap", globalConfig.isBaseResultMap());
     objectMap.put("baseColumnList", globalConfig.isBaseColumnList());

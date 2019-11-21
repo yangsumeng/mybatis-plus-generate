@@ -14,7 +14,7 @@ import java.util.Date;
 #if($hasBigDecimal)
 import java.math.BigDecimal;
 #end
-import com.***.***.***.repository.base.entity.BaseEntity;
+import ${package.parent}.repository.base.entity.BaseEntity;
 import javax.persistence.Entity;
 import javax.persistence.Column;
 import javax.persistence.Table;

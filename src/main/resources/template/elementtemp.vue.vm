@@ -17,50 +17,9 @@
     #end
 #end
 <!-- =============================HTML=================================== -->
-<template>
-    <div class="search">
-        <Card>
-            <Row>
-                <Form ref="searchForm" :model="searchForm" inline class="search-form">
 #foreach($field in ${table.fields})
-#if(${field.name.endsWith("_name")} || ${field.name.endsWith("_code")})
-                    <Form-item label="${field.comment}:" prop="${field.propertyName}" :label-width="80">
-                        <Input type="text" v-model="searchForm.${field.propertyName}" placeholder="${field.comment}" style="width: 130px" />
-                    </Form-item>
+    <el-form-item label="${field.comment}" >{{temp.${field.propertyName}}}</el-form-item>
 #end
-#end
-                    <Form-item>
-                        <Button @click="pageSearch" type="primary">搜索</Button>
-                        <Button @click="handleReset('searchForm')" type="info" ghost>重置</Button>
-                    </Form-item>
-                </Form>
-            </Row>
-            <Row class="operation">
-                <Button v-has="'add'" @click="doAdd" type="primary" icon="md-add">新增</Button>
-                <Button v-has="'delete'" @click="doRemoveAll" type="dashed" icon="ios-trash">批量删除</Button>
-            </Row>
-            <Row>
-                <Alert show-icon>
-                    已选择 <span class="select-count">{{selectCount}}</span> 项
-                    <a class="select-clear" @click="clearSelectAll">清空</a>
-                </Alert>
-            </Row>
-            <!-- ==table== -->
-            <Row class="margin-top-10 searchable-table-con1 operation">
-                <Table highlight-row size="small" :loading="loading" :columns="columns" :data="data" sortable="custom"
-                       height="420" @on-sort-change="changeSort" @on-selection-change="showSelect" ref="table"></Table>
-            </Row>
-            <!-- ==page== -->
-            <Row type="flex" justify="end" class="code-row-bg page">
-                <Page :current="this.searchForm.page" :total="total" :page-size="this.searchForm.size"
-                      @on-change="pageChange" @on-page-size-change="pageSizeChange" :page-size-opts="[10,20,50,100]"
-                      size="small" show-total show-elevator show-sizer></Page>
-            </Row>
-        </Card>
-        <!-- 新增修改 -->
-        <addAndUpdate${table.originalEntityName} ref="addAndUpdate${table.originalEntityName}Ref" @doParentQuery="pageSearch"  />
-    </div>
-</template>
 <!-- ==============================JS================================== -->
 <script>
     import {get${table.originalEntityName}Page,delete${table.originalEntityName}} from './${table.entityPath}';

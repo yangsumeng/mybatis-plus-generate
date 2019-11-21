@@ -43,8 +43,8 @@
 <!-- ==============================JS================================== -->
 <script>
     import {add${table.originalEntityName},edit${table.originalEntityName}} from './${table.entityPath}';
-    import util from "@libs/util.js";
-    import {getStore} from "@utils/storage.js";
+    import util from "@/libs/util.js";
+    import {getStore} from "@/utils/storage.js";
     export default {
         name: "addAndUpdate${table.originalEntityName}",
         components: {},
@@ -141,5 +141,5 @@
 </script>
 <!-- ==============================CSS================================== -->
 <style lang="less" scoped>
-    @import "../../styles/common/common.less";
+    @import "@/styles/common/common.less";
 </style>

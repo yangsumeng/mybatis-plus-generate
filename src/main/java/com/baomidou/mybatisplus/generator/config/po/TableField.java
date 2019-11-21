@@ -15,13 +15,14 @@
  */
 package com.baomidou.mybatisplus.generator.config.po;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.baomidou.mybatisplus.generator.config.StrategyConfig;
 import com.baomidou.mybatisplus.generator.config.rules.DbColumnType;
 import com.baomidou.mybatisplus.toolkit.StringUtils;
-
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * <p>
@@ -32,6 +33,11 @@ import java.util.Set;
  * @since 2016-12-03
  */
 public class TableField {
+    public static final String PAGE_TYPE_SELECT = "select";
+    public static final String PAGE_TYPE_INPUT = "input";
+    public static final String PAGE_TYPE_DATE = "date";
+    public static final String PAGE_TYPE_TEXT = "text";
+    public static final String PAGE_TYPE_NUMBER = "number";
     public static Set baseFieldSet = new HashSet<String>();
     static {
         baseFieldSet.add("id");
@@ -40,9 +46,25 @@ public class TableField {
         baseFieldSet.add("update_by");
         baseFieldSet.add("update_time");
         baseFieldSet.add("create_time");
+        baseFieldSet.add("crt_user_key");
+        baseFieldSet.add("upd_user_key");
+        baseFieldSet.add("crt_user_name");
+        baseFieldSet.add("upd_user_name");
+        baseFieldSet.add("crt_time");
+        baseFieldSet.add("upd_time");
+        baseFieldSet.add("is_deleted");
     }
+
+    private String pageDefaultValue;
+    private String pageType = "input";
+    private boolean isPageSearch;
+    private boolean isOnly;
+    private List<FieldCell> fieldCells;
+
     private boolean convert;
     private boolean keyFlag;
+
+    private boolean isIgnore;
     /**
      * 是否是基础字段 id state create_by  update_by update_time create_time
      */
@@ -52,7 +74,7 @@ public class TableField {
      */
     private boolean keyIdentityFlag;
     /**
-     * 数据库字段
+     * 数据库字段 filmpackage_vendor_key
      */
     private String name;
     /**
@@ -61,6 +83,9 @@ public class TableField {
     private String type;
     private String propertyName;
     private DbColumnType columnType;
+    /**
+     * 如果是字典项格式是这样的            是否上线:0|否,1|是
+     */
     private String comment;
     private String fill;
     /**
@@ -198,5 +223,57 @@ public class TableField {
 
     public void setCustomMap(Map<String, Object> customMap) {
         this.customMap = customMap;
+    }
+
+
+    public String getPageDefaultValue() {
+        return pageDefaultValue;
+    }
+
+    public void setPageDefaultValue(String pageDefaultValue) {
+        this.pageDefaultValue = pageDefaultValue;
+    }
+
+    public String getPageType() {
+        return pageType;
+    }
+
+    public void setPageType(String pageType) {
+        this.pageType = pageType;
+    }
+
+    public boolean isPageSearch() {
+        return isPageSearch;
+    }
+
+    public void setPageSearch(boolean pageSearch) {
+        isPageSearch = pageSearch;
+    }
+
+    public void setPropertyName(String propertyName) {
+        this.propertyName = propertyName;
+    }
+
+    public List<FieldCell> getFieldCells() {
+        return fieldCells;
+    }
+    public void setFieldCells(List<FieldCell> fieldCells) {
+        this.fieldCells = fieldCells;
+    }
+
+    public boolean isIgnore() {
+        return isIgnore;
+    }
+
+    public void setIgnore(boolean ignore) {
+        isIgnore = ignore;
+    }
+
+    public boolean isOnly() {
+        return isOnly;
+    }
+
+    public void setOnly(boolean only) {
+        isOnly = only;
     }
 }

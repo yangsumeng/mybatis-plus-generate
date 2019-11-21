@@ -15,7 +15,7 @@ package com.baomidou.mybatisplus.generator.config.builder;
 
 import com.baomidou.mybatisplus.generator.InjectionConfig;
 import com.baomidou.mybatisplus.generator.config.*;
-import com.baomidou.mybatisplus.generator.config.po.StaticCell;
+import com.baomidou.mybatisplus.generator.config.po.FieldCell;
 import com.baomidou.mybatisplus.generator.config.po.TableField;
 import com.baomidou.mybatisplus.generator.config.po.TableFill;
 import com.baomidou.mybatisplus.generator.config.po.TableInfo;
@@ -195,6 +195,7 @@ public class ConfigBuilder {
    */
   private void handlerPackage(TemplateConfig template, String outputDir, PackageConfig config) {
     packageInfo = new HashMap<>(8);
+    packageInfo.put("parent",config.getParent(true));
     packageInfo.put(ConstVal.MODULENAME, config.getModuleName());
     packageInfo.put(ConstVal.ENTITY, joinPackage(config.getParent(), config.getEntity()));
     packageInfo.put(ConstVal.MAPPER, joinPackage(config.getParent(), config.getMapper()));
@@ -538,7 +539,6 @@ public class ConfigBuilder {
   private TableInfo convertTableFields(TableInfo tableInfo, NamingStrategy strategy) {
     boolean haveId = false;
     List<TableField> fieldList = new ArrayList<>();
-    List<StaticCell> staticCellList = new ArrayList<>();
     List<TableField> commonFieldList = new ArrayList<>();
     try {
       String tableFieldsSql = dbQuery.tableFieldsSql();
@@ -580,27 +580,64 @@ public class ConfigBuilder {
         field.setPropertyName(strategyConfig, processName(field.getName(), strategy));
         field.setColumnType(dataSourceConfig.getTypeConvert().processTypeConvert(field.getType()));
         field.setComment(results.getString(dbQuery.fieldComment()));
+
+        switch(field.getColumnType().name()){
+          case "LONG" :
+          case "DOUBLE" :
+          case "INTEGER" :
+          case "FLOAT" :
+            field.setPageType(TableField.PAGE_TYPE_NUMBER);break;
+          case "DATE" :field.setPageType(TableField.PAGE_TYPE_DATE);break;
+          case "BLOB" :
+          case "CLOB" :
+            field.setPageType(TableField.PAGE_TYPE_TEXT);break;
+          default:field.setPageType(TableField.PAGE_TYPE_INPUT);
+        }
+        /*
+         *  自动根据数据库字段描述生成字典项列表    EG  是否上线:0|否,1|是
+         */
         try{
             String comment = field.getComment();
             if(StringUtils.isNotEmpty(comment)){
-                //兼容处理
+                //兼容处理    是否上线:0|否,1|是
                 comment = comment.replaceAll("，",",");
-                comment = comment.replaceAll("|",",");
+                comment = comment.replaceAll(" ","");
                 comment = comment.replaceAll("：",":");
-                if(comment.contains("=")){
-                    comment = comment.substring(comment.indexOf("="),comment.length());
-                }
-                if(comment.contains(":") && comment.contains(",") ){
-                    for(String valueAndName : comment.split(",")){
-                        String[] valueAndNameArry = valueAndName.split(":");
-                        staticCellList.add(new StaticCell(valueAndNameArry[0],valueAndNameArry[1]));
+                if(comment.contains(":")){
+                    //截取：前的字符串
+                    field.setComment(comment.substring(0,comment.indexOf(":")));
+                    //处理字段
+                    comment = comment.substring(comment.indexOf(":")+1);
+                    if(comment.contains("|") && comment.contains(",") ){
+                      List<FieldCell> cellList = new ArrayList<>();
+                      String[] tags = {"","success","info","warning","danger"};
+                      int i = 0;
+                      for(String valueAndName : comment.split(",")){
+                        String[] valueAndNameArry = valueAndName.split("\\|");
+                        cellList.add(new FieldCell(valueAndNameArry[0],valueAndNameArry[1],tags[i++%5]));
+                      }
+                      field.setPageType(TableField.PAGE_TYPE_SELECT);
+                      field.setFieldCells(cellList);
                     }
                 }
+            }else {
+              field.setComment(field.getPropertyName());
             }
         } catch(Exception e) {
-            System.err.print("设置静态属性列表 备注规则： eg 类型=A:优秀，B:良好");
-            System.err.println(field.getComment());
+            System.err.print(field.getComment()+"设置静态属性列表 备注规则： eg 类型=A:优秀，B:良好"+e);
         }
+
+        for(String s:Arrays.asList(" ",",","(",":","：","\r\n","\\")){
+          if(field.getComment().contains(s)){
+            int index = field.getComment().indexOf(s);
+            field.setComment(field.getComment().substring(0,index));
+          }
+        }
+
+        if(field.getComment().length() > 10){
+          field.setComment(field.getComment().substring(0,10));
+        }
+
         if (strategyConfig.includeSuperEntityColumns(field.getName())) {
           // 跳过公共字段
           commonFieldList.add(field);

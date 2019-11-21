@@ -1,5 +1,6 @@
 package ${package.Form};
 
+import ${package.parent}.repository.base.entity.BaseEntity;
 import java.util.Date;
 #if(${entityLombokModel})
 import lombok.Data;
@@ -17,18 +18,23 @@ import io.swagger.annotations.ApiModelProperty;
 #if(${entityLombokModel})
 @Data
 #end
-@ApiModel("$!{table.comment}${entity}【实体类】")
-public class ${table.originalEntityName}Form {
+@ApiModel("$!{table.comment}【实体类】")
+public class ${table.originalEntityName}Form extends BaseEntity{
 ## ----------  BEGIN 字段循环遍历  ----------
 #foreach($field in ${table.fields})
 #if(${field.keyFlag})
 #set($keyPropertyName=${field.propertyName})
 #end
-#if("$!field.comment" != "")
-    /** ${field.comment} */
-#end
+
+#if("id"==${field.name} || "create_by"==${field.name} || "create_time"==${field.name} || "update_by"==${field.name} || "update_time"==${field.name})
+## ----------  父类中的字段 不处理 ----------
+#else
+    #if("$!field.comment" != "")
+        /** ${field.comment} */
+    #end
     @ApiModelProperty(value = "$!{field.comment}")
     private ${field.propertyType} ${field.propertyName};
+#end
 #end
 ## ----------  END 字段循环遍历  ----------
 }

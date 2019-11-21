@@ -62,6 +62,10 @@ public class PackageConfig {
     return parent;
   }
 
+ public String getParent(boolean isOriginal) {
+    return parent;
+ }
+
   public PackageConfig setParent(String parent) {
     this.parent = parent;
     return this;

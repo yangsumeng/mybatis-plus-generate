@@ -15,11 +15,15 @@
  */
 package com.baomidou.mybatisplus.generator.config.po;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import com.baomidou.mybatisplus.generator.config.StrategyConfig;
 import com.baomidou.mybatisplus.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.toolkit.StringUtils;
-
-import java.util.*;
 
 /**
  * <p>
@@ -31,6 +35,10 @@ import java.util.*;
  */
 public class TableInfo {
 
+    private String pageId;
+    private String pageName;
+    private String pageUrl;
+    private boolean pageDateQuery;
     private boolean convert;
     private String name;
     private String comment;
@@ -48,7 +56,6 @@ public class TableInfo {
 
     private List<TableField> fields;
 
-    private List<StaticCell> staticCells;
     // 公共字段
     private List<TableField> commonFields;
     private List<String> importPackages = new ArrayList<>();
@@ -200,14 +207,6 @@ public class TableInfo {
         this.voName = voName;
     }
 
-    public List<StaticCell> getStaticCells() {
-        return staticCells;
-    }
-
-    public void setStaticCells(List<StaticCell> staticCells) {
-        this.staticCells = staticCells;
-    }
-
     public void setFields(List<TableField> fields) {
         if (CollectionUtils.isNotEmpty(fields)) {
             this.fields = fields;
@@ -294,4 +293,36 @@ public class TableInfo {
         return fieldNames;
     }
 
+
+    public String getPageId() {
+        return pageId;
+    }
+
+    public void setPageId(String pageId) {
+        this.pageId = pageId;
+    }
+
+    public String getPageName() {
+        return pageName;
+    }
+
+    public void setPageName(String pageName) {
+        this.pageName = pageName;
+    }
+
+    public String getPageUrl() {
+        return pageUrl;
+    }
+
+    public void setPageUrl(String pageUrl) {
+        this.pageUrl = pageUrl;
+    }
+
+    public boolean isPageDateQuery() {
+        return pageDateQuery;
+    }
+
+    public void setPageDateQuery(boolean pageDateQuery) {
+        this.pageDateQuery = pageDateQuery;
+    }
 }

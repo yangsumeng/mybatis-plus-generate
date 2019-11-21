@@ -60,7 +60,7 @@ import ${superControllerClassPackage};
 @Controller
 #end
 @RequestMapping("${table.entityPath}")
-@Api(value = "${table.entityPath}" , description = "${table.comment}【接口类】")
+@Api(value = "${table.comment}" , tags = "$!{table.comment}模块")
 #if(${kotlin})
 class ${table.controllerName}#if(${superControllerClass}) : ${superControllerClass}()#end
 
@@ -84,10 +84,10 @@ public class ${table.controllerName} {
     #end
 #end
             if (${table.entityPath}Form.get${pkField.capitalName}() != null) {
-                predicates.add(cb.equal(root.get("${pkField.name}"), ${table.entityPath}Form.get${pkField.capitalName}()));
+                predicates.add(cb.equal(root.get("${pkField.propertyName}"), ${table.entityPath}Form.get${pkField.capitalName}()));
             }
             if (${table.entityPath}Form.get${createDateField.capitalName}() != null) {
-                predicates.add(cb.equal(root.get("${createDateField.name}"), ${table.entityPath}Form.get${createDateField.capitalName}()));
+                predicates.add(cb.equal(root.get("${createDateField.propertyName}"), ${table.entityPath}Form.get${createDateField.capitalName}()));
             }
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
@@ -104,7 +104,7 @@ public class ${table.controllerName} {
 
 	/**自动生成 ${date} $!{version}*/
 	@ApiOperation(value="获取分页数据")
-    @OperatorLog("${table.entityPath}新增")
+    @OperatorLog("${table.comment}获取分页数据")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "page", value = "当前页", required = true, paramType = "query"),
 			@ApiImplicitParam(name = "size", value = "每页数", required = true, paramType = "query"),
@@ -124,8 +124,8 @@ public class ${table.controllerName} {
 	}
 
 	/**自动生成 ${date} $!{version}*/
-	@ApiOperation(value="新增${table.entityPath}")
-    @OperatorLog("${table.entityPath}新增")
+	@ApiOperation(value="新增$!{table.comment}实体")
+    @OperatorLog("$!{table.comment}实体新增")
     @PostMapping
 	public WebResult addEntity(@RequestBody @ApiParam(name="param",value="参数JSON",required=true) ${table.formName} ${table.entityPath}Form) {
         ${entity} ${table.entityPath}Entity = OrikaMapper.map(${table.entityPath}Form, ${entity}.class);
@@ -147,8 +147,8 @@ public class ${table.controllerName} {
 		return WebResultUtil.genSuccessResult();
 	}
 	
-	@ApiOperation(value="编辑${table.entityPath}")
-    @OperatorLog("${table.entityPath}修改")
+	@ApiOperation(value="编辑$!{table.comment}实体")
+    @OperatorLog("$!{table.comment}实体修改")
     @PutMapping
 	public WebResult editEntity(@RequestBody @ApiParam(name="param",value="参数JSON",required=true) ${table.formName} ${table.entityPath}Form) {
         ${entity} ${table.entityPath} = OrikaMapper.map(${table.entityPath}Form, ${entity}.class);
