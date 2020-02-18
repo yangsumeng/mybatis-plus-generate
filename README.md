@@ -8,6 +8,8 @@
 -[x] Vue生成权限控制
 -[x] Vue新增删除修改查询
 -[x] 将_name 和 _code的字段自动生成查询条件
+-[x] 增加前端页面IMSCodeGenerator例子  可以生成页面select是根据数据库comment自动生成字典
+        comment EG:  是否转发:1|是，2|否       
 
 ### 使用説明
 - 判断字段类型

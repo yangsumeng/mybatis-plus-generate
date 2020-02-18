@@ -1,6 +1,8 @@
-package com.baomidou.mybatisplus.generator;
+package com.baomidou.mybatisplus.generator.run;
 
 import com.baomidou.mybatisplus.enums.IdType;
+import com.baomidou.mybatisplus.generator.AutoGenerator;
+import com.baomidou.mybatisplus.generator.InjectionConfig;
 import com.baomidou.mybatisplus.generator.config.*;
 import com.baomidou.mybatisplus.generator.config.rules.DbType;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
